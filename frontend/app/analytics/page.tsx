@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { DashboardLayout } from "@/components/DashboardLayout";
+import { MetricCard } from "@/components/ui/MetricCard";
+import { ChartCard } from "@/components/ui/ChartCard";
 import {
   getAnalyticsSummary,
   getAnalyticsCashflow,
@@ -15,14 +17,11 @@ import {
   type RevenueTrendResponse,
 } from "@/lib/api";
 import {
-  ShieldCheck,
   TrendingUp,
   TrendingDown,
-  Minus,
   Loader2,
   AlertCircle,
   IndianRupee,
-  BarChart2,
   PieChart,
   Activity,
   Upload,
@@ -97,80 +96,10 @@ const ChartTooltip = ({
   );
 };
 
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
-
-function KpiCard({
-  label,
-  value,
-  subtitle,
-  icon: Icon,
-  color,
-  trend,
-}: {
-  label: string;
-  value: string;
-  subtitle?: string;
-  icon: React.ElementType;
-  color: string;
-  trend?: "up" | "down" | "neutral";
-}) {
-  const TrendIcon =
-    trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
-  const trendColor =
-    trend === "up"
-      ? "text-emerald-400"
-      : trend === "down"
-      ? "text-red-400"
-      : "text-gray-400";
-
-  return (
-    <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-5 hover:border-gray-700 transition-colors">
-      <div className="flex items-start justify-between mb-4">
-        <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}
-        >
-          <Icon className="w-5 h-5" />
-        </div>
-        {trend && (
-          <TrendIcon className={`w-4 h-4 ${trendColor}`} />
-        )}
-      </div>
-      <p className="text-2xl font-bold text-white tracking-tight">{value}</p>
-      <p className="text-sm font-medium text-gray-400 mt-1">{label}</p>
-      {subtitle && (
-        <p className="text-xs text-gray-600 mt-0.5">{subtitle}</p>
-      )}
-    </div>
-  );
-}
-
-// ─── Section card ─────────────────────────────────────────────────────────────
-
-function ChartCard({
-  title,
-  icon: Icon,
-  children,
-}: {
-  title: string;
-  icon: React.ElementType;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-6">
-      <div className="flex items-center gap-2.5 mb-6">
-        <Icon className="w-4 h-4 text-blue-400" />
-        <h2 className="text-sm font-semibold text-white">{title}</h2>
-      </div>
-      {children}
-    </div>
-  );
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AnalyticsPage() {
-  const router = useRouter();
-  const { firebaseUser, loading: authLoading, getIdToken } = useAuth();
+  const { firebaseUser, authLoading, getIdToken } = useAuth();
 
   const [summary, setSummary] = useState<FinancialSummary | null>(null);
   const [cashflow, setCashflow] = useState<CashflowResponse | null>(null);
@@ -180,13 +109,7 @@ export default function AnalyticsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && !firebaseUser) {
-      router.push("/login");
-    }
-  }, [authLoading, firebaseUser, router]);
-
-  useEffect(() => {
-    if (!firebaseUser) return;
+    if (!firebaseUser || authLoading) return;
     let mounted = true;
 
     const load = async () => {
@@ -218,16 +141,18 @@ export default function AnalyticsPage() {
     return () => {
       mounted = false;
     };
-  }, [firebaseUser, getIdToken]);
+  }, [firebaseUser, authLoading, getIdToken]);
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-9 h-9 text-blue-500 animate-spin" />
-          <p className="text-sm text-gray-500">Loading analytics…</p>
+      <DashboardLayout>
+        <div className="flex h-[80vh] items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-9 h-9 text-blue-500 animate-spin" />
+            <p className="text-sm text-gray-500">Loading analytics…</p>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
@@ -251,53 +176,11 @@ export default function AnalyticsPage() {
   }));
 
   const hasData = summary && summary.transaction_count > 0;
-
-  const netPositive =
-    summary && parseFloat(summary.net_cash_flow) >= 0;
+  const netPositive = summary && parseFloat(summary.net_cash_flow) >= 0;
 
   return (
-    <div className="min-h-screen bg-[#0D1117] text-gray-100">
-      {/* ── Navbar ── */}
-      <header className="sticky top-0 z-40 bg-[#161B22]/80 backdrop-blur-md border-b border-gray-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <ShieldCheck className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              FIN<span className="text-blue-500">BRIDGE</span>
-            </span>
-          </Link>
-          <nav className="flex items-center gap-2">
-            <Link
-              href="/dashboard"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/transactions"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
-            >
-              Transactions
-            </Link>
-            <Link
-              href="/analytics"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20"
-            >
-              Analytics
-            </Link>
-            <Link
-              href="/financial-coach?q=How%20can%20I%20improve%20my%20cash%20flow%20and%20expense%20ratio%3F"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-colors"
-            >
-              Ask AI Coach
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <DashboardLayout>
+      <div className="space-y-8">
         {/* ── Page header ── */}
         <div>
           <h1 className="text-2xl font-bold text-white">Financial Analytics</h1>
@@ -331,7 +214,7 @@ export default function AnalyticsPage() {
             </div>
             <Link
               href="/transactions"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/25 transition-colors"
+              className="btn btn-primary"
             >
               Upload Transactions
             </Link>
@@ -341,58 +224,50 @@ export default function AnalyticsPage() {
         {hasData && summary && (
           <>
             {/* ── KPI Cards ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <KpiCard
-                label="Avg Monthly Revenue"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricCard
+                title="Avg Monthly Revenue"
                 value={formatINR(summary.monthly_revenue)}
                 subtitle={`Total: ${formatINR(summary.total_revenue)}`}
                 icon={TrendingUp}
-                color="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-                trend="up"
+                trend="Consistent"
+                trendDirection="up"
+                delay={100}
               />
-              <KpiCard
-                label="Avg Monthly Expenses"
+              <MetricCard
+                title="Avg Monthly Expenses"
                 value={formatINR(summary.monthly_expenses)}
                 subtitle={`Total: ${formatINR(summary.total_expenses)}`}
                 icon={TrendingDown}
-                color="bg-red-500/10 border border-red-500/20 text-red-400"
-                trend="down"
+                delay={200}
               />
-              <KpiCard
-                label="Net Cash Flow"
+              <MetricCard
+                title="Net Cash Flow"
                 value={formatINR(summary.net_cash_flow)}
                 subtitle="Monthly average"
                 icon={Activity}
-                color={
-                  netPositive
-                    ? "bg-blue-500/10 border border-blue-500/20 text-blue-400"
-                    : "bg-orange-500/10 border border-orange-500/20 text-orange-400"
-                }
-                trend={netPositive ? "up" : "down"}
+                trendDirection={netPositive ? "up" : "down"}
+                delay={300}
               />
-              <KpiCard
-                label="Expense Ratio"
+              <MetricCard
+                title="Expense Ratio"
                 value={`${(parseFloat(summary.expense_ratio) * 100).toFixed(1)}%`}
                 subtitle="Expenses / Revenue"
                 icon={PieChart}
-                color="bg-purple-500/10 border border-purple-500/20 text-purple-400"
-                trend={
-                  parseFloat(summary.expense_ratio) < 0.7
-                    ? "up"
-                    : "down"
-                }
+                trendDirection={parseFloat(summary.expense_ratio) < 0.7 ? "up" : "down"}
+                delay={400}
               />
             </div>
 
             {/* ── Secondary metrics ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="glass-card p-5">
                 <p className="text-xs text-gray-500 mb-1">Avg Transaction Value</p>
                 <p className="text-xl font-bold text-white">
                   {formatINR(summary.average_transaction_value)}
                 </p>
               </div>
-              <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-5">
+              <div className="glass-card p-5">
                 <p className="text-xs text-gray-500 mb-1">Revenue Consistency (CV)</p>
                 <p className="text-xl font-bold text-white">
                   {(parseFloat(summary.revenue_consistency) * 100).toFixed(1)}%
@@ -401,7 +276,7 @@ export default function AnalyticsPage() {
                   Lower = more consistent
                 </p>
               </div>
-              <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-5">
+              <div className="glass-card p-5">
                 <p className="text-xs text-gray-500 mb-1">Cash-Flow Volatility</p>
                 <p className="text-xl font-bold text-white">
                   {formatINR(summary.cash_flow_volatility)}
@@ -414,14 +289,10 @@ export default function AnalyticsPage() {
 
             {/* ── Revenue Trend Chart ── */}
             {revTrendChartData.length > 0 && (
-              <ChartCard title="Monthly Revenue Trend" icon={TrendingUp}>
+              <ChartCard title="Monthly Revenue Trend">
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={revTrendChartData}>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="#1F2937"
-                      vertical={false}
-                    />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} />
                     <XAxis
                       dataKey="month"
                       tickFormatter={formatMonth}
@@ -453,52 +324,20 @@ export default function AnalyticsPage() {
             {/* ── Cash-Flow Area Chart ── */}
             {cashflowChartData.length > 0 && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <ChartCard title="Revenue vs Expenses" icon={BarChart2}>
+                <ChartCard title="Revenue vs Expenses">
                   <ResponsiveContainer width="100%" height={230}>
                     <AreaChart data={cashflowChartData}>
                       <defs>
-                        <linearGradient
-                          id="revGrad"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#10B981"
-                            stopOpacity={0.3}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#10B981"
-                            stopOpacity={0}
-                          />
+                        <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                         </linearGradient>
-                        <linearGradient
-                          id="expGrad"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#EF4444"
-                            stopOpacity={0.3}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#EF4444"
-                            stopOpacity={0}
-                          />
+                        <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#1F2937"
-                        vertical={false}
-                      />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} />
                       <XAxis
                         dataKey="month"
                         tickFormatter={formatMonth}
@@ -514,55 +353,23 @@ export default function AnalyticsPage() {
                         width={75}
                       />
                       <Tooltip content={<ChartTooltip />} />
-                      <Legend
-                        wrapperStyle={{ fontSize: "11px", color: "#9CA3AF" }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="Revenue"
-                        stroke="#10B981"
-                        fill="url(#revGrad)"
-                        strokeWidth={2}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="Expenses"
-                        stroke="#EF4444"
-                        fill="url(#expGrad)"
-                        strokeWidth={2}
-                      />
+                      <Legend wrapperStyle={{ fontSize: "11px", color: "#9CA3AF" }} />
+                      <Area type="monotone" dataKey="Revenue" stroke="#10B981" fill="url(#revGrad)" strokeWidth={2} />
+                      <Area type="monotone" dataKey="Expenses" stroke="#EF4444" fill="url(#expGrad)" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </ChartCard>
 
-                <ChartCard title="Net Cash Flow Trend" icon={Activity}>
+                <ChartCard title="Net Cash Flow Trend">
                   <ResponsiveContainer width="100%" height={230}>
                     <AreaChart data={cashflowChartData}>
                       <defs>
-                        <linearGradient
-                          id="netGrad"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#3B82F6"
-                            stopOpacity={0.35}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#3B82F6"
-                            stopOpacity={0}
-                          />
+                        <linearGradient id="netGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.35} />
+                          <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#1F2937"
-                        vertical={false}
-                      />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} />
                       <XAxis
                         dataKey="month"
                         tickFormatter={formatMonth}
@@ -578,13 +385,7 @@ export default function AnalyticsPage() {
                         width={75}
                       />
                       <Tooltip content={<ChartTooltip />} />
-                      <Area
-                        type="monotone"
-                        dataKey="Net"
-                        stroke="#3B82F6"
-                        fill="url(#netGrad)"
-                        strokeWidth={2}
-                      />
+                      <Area type="monotone" dataKey="Net" stroke="#3B82F6" fill="url(#netGrad)" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </ChartCard>
@@ -593,7 +394,7 @@ export default function AnalyticsPage() {
 
             {/* ── Expense Categories Donut ── */}
             {expenseChartData.length > 0 && (
-              <ChartCard title="Expense Categories Breakdown" icon={PieChart}>
+              <ChartCard title="Expense Categories Breakdown">
                 <div className="flex flex-col lg:flex-row items-center gap-6">
                   <div className="w-full lg:w-64 h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -608,10 +409,7 @@ export default function AnalyticsPage() {
                           dataKey="value"
                         >
                           {expenseChartData.map((_, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={PIE_COLORS[index % PIE_COLORS.length]}
-                            />
+                            <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip
@@ -627,32 +425,22 @@ export default function AnalyticsPage() {
                     </ResponsiveContainer>
                   </div>
 
-                  {/* Legend */}
                   <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
                     {expenseChartData.map((cat, i) => (
                       <div
                         key={cat.name}
-                        className="flex items-center justify-between bg-[#0D1117] rounded-xl px-3 py-2.5 border border-gray-800/80"
+                        className="flex items-center justify-between bg-white/5 rounded-xl px-3 py-2.5 border border-white/5"
                       >
                         <div className="flex items-center gap-2">
                           <div
                             className="w-3 h-3 rounded-full shrink-0"
-                            style={{
-                              backgroundColor:
-                                PIE_COLORS[i % PIE_COLORS.length],
-                            }}
+                            style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
                           />
-                          <span className="text-xs text-gray-300 font-medium">
-                            {cat.name}
-                          </span>
+                          <span className="text-xs text-gray-300 font-medium">{cat.name}</span>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs font-bold text-white">
-                            {formatINR(cat.value)}
-                          </p>
-                          <p className="text-[10px] text-gray-500">
-                            {cat.percentage.toFixed(1)}%
-                          </p>
+                          <p className="text-xs font-bold text-white">{formatINR(cat.value)}</p>
+                          <p className="text-[10px] text-gray-500">{cat.percentage.toFixed(1)}%</p>
                         </div>
                       </div>
                     ))}
@@ -665,13 +453,13 @@ export default function AnalyticsPage() {
 
         {/* ── Bottom stats ── */}
         {hasData && summary && (
-          <div className="rounded-2xl bg-[#161B22] border border-gray-800 p-6">
+          <div className="glass-card p-6">
             <div className="flex items-center gap-2.5 mb-4">
               <IndianRupee className="w-4 h-4 text-emerald-400" />
               <h2 className="text-sm font-semibold text-white">
                 Financial Health Summary
               </h2>
-              <span className="text-[10px] text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full ml-auto">
+              <span className="text-[10px] text-gray-500 bg-white/10 px-2 py-0.5 rounded-full ml-auto">
                 {summary.transaction_count} transactions analyzed
               </span>
             </div>
@@ -692,16 +480,13 @@ export default function AnalyticsPage() {
                 <p className="text-xs text-gray-500">Net Profit</p>
                 <p
                   className={`text-lg font-bold mt-0.5 ${
-                    parseFloat(summary.total_revenue) -
-                      parseFloat(summary.total_expenses) >=
-                    0
+                    parseFloat(summary.total_revenue) - parseFloat(summary.total_expenses) >= 0
                       ? "text-blue-400"
                       : "text-orange-400"
                   }`}
                 >
                   {formatINR(
-                    parseFloat(summary.total_revenue) -
-                      parseFloat(summary.total_expenses)
+                    parseFloat(summary.total_revenue) - parseFloat(summary.total_expenses)
                   )}
                 </p>
               </div>
@@ -714,7 +499,7 @@ export default function AnalyticsPage() {
             </div>
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

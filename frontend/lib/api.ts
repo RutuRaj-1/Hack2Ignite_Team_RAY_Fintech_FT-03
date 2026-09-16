@@ -247,6 +247,17 @@ export async function updateBusiness(
   );
 }
 
+export async function seedDemoData(
+  idToken: string
+): Promise<{ success: boolean; message: string }> {
+  return request<{ success: boolean; message: string }>(
+    "/api/v1/demo/seed",
+    { method: "POST" },
+    idToken
+  );
+}
+
+
 // ─────────────────────────────────────────────
 // Transaction endpoints  (Part 03)
 // ─────────────────────────────────────────────

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import {
   getCreditProfile,
   simulateLoan,
@@ -11,21 +12,11 @@ import {
   type LoanSimulationResponse,
 } from "@/lib/api";
 import {
-  ShieldCheck,
-  CreditCard,
   Sliders,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
-  CheckCircle2,
-  IndianRupee,
-  Activity,
   ArrowLeft,
   ArrowRight,
   Info,
-  Sparkles,
-  Zap,
-  Scale,
   Loader2,
   RotateCcw,
 } from "lucide-react";
@@ -61,7 +52,7 @@ function calculateClientEmi(p: number, annualRate: number, n: number) {
 }
 
 export default function LoanSimulatorPage() {
-  const { firebaseUser, getIdToken, loading: authLoading } = useAuth();
+  const { firebaseUser, getIdToken, authLoading } = useAuth();
   const router = useRouter();
 
   const [creditProfile, setCreditProfile] = useState<CreditProfileResponse | null>(null);
@@ -77,12 +68,7 @@ export default function LoanSimulatorPage() {
 
   // Load verified business telemetry
   useEffect(() => {
-    if (!authLoading && !firebaseUser) {
-      router.push("/login");
-      return;
-    }
-
-    if (firebaseUser) {
+    if (!authLoading && firebaseUser) {
       getIdToken().then((token) => {
         if (!token) return;
         getCreditProfile(token)
@@ -98,7 +84,7 @@ export default function LoanSimulatorPage() {
           .finally(() => setLoading(false));
       });
     }
-  }, [firebaseUser, authLoading, router, getIdToken]);
+  }, [firebaseUser, authLoading, getIdToken]);
 
   // Debounced server simulation
   const runServerSimulation = useCallback(
@@ -139,31 +125,30 @@ export default function LoanSimulatorPage() {
   const burdenPct = netCashFlow > 0 ? (clientEmi.emi / netCashFlow) * 100 : 150;
   const isOverborrowing = postSurplus < 0 || burdenPct > 35;
 
-  if (authLoading || (!firebaseUser && loading)) {
+  if (loading && !creditProfile) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-      </div>
+      <DashboardLayout>
+        <div className="flex h-[80vh] items-center justify-center">
+          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500/30 pb-20">
-      {/* ── Top Navbar ─────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md px-6 py-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* ── Top Navbar ─────────────────────────────────────────────────── */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link
-              href="/loan"
-              className="flex items-center gap-1.5 text-slate-400 hover:text-white transition text-xs font-semibold"
-            >
+            <Link href="/loan" className="flex items-center gap-1.5 text-gray-400 hover:text-white transition text-xs font-semibold">
               <ArrowLeft className="h-4 w-4" />
-              <span>Back to Loan Hub</span>
+              <span>Back</span>
             </Link>
-            <span className="text-slate-600">/</span>
+            <span className="text-gray-600">/</span>
             <div className="flex items-center gap-2">
-              <Sliders className="h-4 w-4 text-indigo-400" />
-              <h1 className="text-base font-semibold text-white">Repayment Simulator</h1>
+              <Sliders className="h-5 w-5 text-indigo-400" />
+              <h1 className="text-xl font-bold text-white">Repayment Simulator</h1>
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full">
               Live Scenario
@@ -177,25 +162,19 @@ export default function LoanSimulatorPage() {
                 setTenureMonths(12);
                 setInterestRate(14.0);
               }}
-              className="text-xs px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white transition flex items-center gap-1.5"
+              className="btn btn-outline !py-1.5 !px-3 !text-xs"
             >
-              <RotateCcw className="h-3 w-3" />
-              <span>Reset Defaults</span>
+              <RotateCcw className="h-3 w-3 mr-1" />
+              Reset
             </button>
-            <Link
-              href="/loan"
-              className="text-xs px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition font-semibold flex items-center gap-1.5 shadow-lg shadow-indigo-600/20"
-            >
-              <span>Apply with These Terms</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+            <Link href="/loan" className="btn btn-primary !py-1.5 !px-3 !text-xs">
+              Apply Terms <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Link>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-6 pt-8 space-y-8">
         {/* ── Guidance Banner ────────────────────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 via-slate-900/60 to-cyan-950/40 p-4 backdrop-blur-xl">
+        <div className="glass-card p-4 border-indigo-500/20 bg-indigo-500/5">
           <div className="flex items-start gap-3.5">
             <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mt-0.5 shrink-0">
               <Info className="h-5 w-5" />
@@ -205,11 +184,11 @@ export default function LoanSimulatorPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
                   Dynamic Solvency Modeler
                 </span>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-gray-400">
                   Real-time reducing-balance amortization with cash flow protection
                 </span>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-gray-400 leading-relaxed">
                 Drag the sliders to see instant reducing-balance monthly installments, total interest,
                 and how your net monthly cash flow responds. If the repayment burden exceeds 35%,
                 over-borrowing safeguards will visually warn you.
@@ -221,14 +200,14 @@ export default function LoanSimulatorPage() {
         {/* ── Main Simulator Layout (2 Columns) ───────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Interactive Controls (6 cols) */}
-          <div className="lg:col-span-6 rounded-3xl border border-slate-800 bg-slate-900/60 p-8 shadow-xl backdrop-blur-xl space-y-7">
+          <div className="lg:col-span-6 glass-card p-8 space-y-7">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Sliders className="h-5 w-5 text-cyan-400" />
                   Loan Parameters
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-gray-400 mt-0.5">
                   Adjust principal, tenure, and APR to model scenario viability.
                 </p>
               </div>
@@ -236,9 +215,9 @@ export default function LoanSimulatorPage() {
             </div>
 
             {/* Slider 1: Loan Amount */}
-            <div className="space-y-3 p-4 rounded-2xl border border-slate-800/80 bg-slate-950/60">
+            <div className="space-y-3 p-4 rounded-2xl border border-white/5 bg-black/20">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-300">Loan Principal</label>
+                <label className="text-xs font-semibold text-gray-300">Loan Principal</label>
                 <div className="flex items-center gap-1 font-mono text-cyan-400 font-extrabold text-lg">
                   <span>{formatINR(loanAmount)}</span>
                 </div>
@@ -251,26 +230,24 @@ export default function LoanSimulatorPage() {
                 step={5000}
                 value={loanAmount}
                 onChange={(e) => setLoanAmount(Number(e.target.value))}
-                className="w-full accent-cyan-400 cursor-pointer h-2 bg-slate-800 rounded-lg appearance-none"
+                className="w-full accent-cyan-400 cursor-pointer h-2 bg-black/40 rounded-lg appearance-none"
               />
 
-              <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                <span>₹10,000</span>
-                <span>₹2,50,000</span>
-                <span>₹5,00,000</span>
-                <span>₹10,00,000</span>
+              <div className="flex justify-between text-[10px] text-gray-500 font-mono">
+                <span>₹10K</span>
+                <span>₹2.5L</span>
+                <span>₹5L</span>
+                <span>₹10L</span>
               </div>
             </div>
 
             {/* Slider 2: Tenure Months */}
-            <div className="space-y-3 p-4 rounded-2xl border border-slate-800/80 bg-slate-950/60">
+            <div className="space-y-3 p-4 rounded-2xl border border-white/5 bg-black/20">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-300">Repayment Tenure</label>
+                <label className="text-xs font-semibold text-gray-300">Repayment Tenure</label>
                 <div className="flex items-center gap-1 font-mono text-indigo-400 font-extrabold text-lg">
                   <span>{tenureMonths} Months</span>
-                  <span className="text-xs text-slate-500 font-sans">
-                    ({(tenureMonths / 12).toFixed(1)} yr)
-                  </span>
+                  <span className="text-xs text-gray-500 font-sans">({(tenureMonths / 12).toFixed(1)} yr)</span>
                 </div>
               </div>
 
@@ -281,29 +258,27 @@ export default function LoanSimulatorPage() {
                 step={1}
                 value={tenureMonths}
                 onChange={(e) => setTenureMonths(Number(e.target.value))}
-                className="w-full accent-indigo-500 cursor-pointer h-2 bg-slate-800 rounded-lg appearance-none"
+                className="w-full accent-indigo-500 cursor-pointer h-2 bg-black/40 rounded-lg appearance-none"
               />
 
-              <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                <span>1 Month</span>
-                <span>12 Months</span>
-                <span>24 Months</span>
-                <span>36 Months</span>
+              <div className="flex justify-between text-[10px] text-gray-500 font-mono">
+                <span>1M</span>
+                <span>12M</span>
+                <span>24M</span>
+                <span>36M</span>
               </div>
             </div>
 
             {/* Slider 3: Interest Rate APR */}
-            <div className="space-y-3 p-4 rounded-2xl border border-slate-800/80 bg-slate-950/60">
+            <div className="space-y-3 p-4 rounded-2xl border border-white/5 bg-black/20">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <label className="text-xs font-semibold text-slate-300">Annual Interest Rate</label>
-                  <span className="text-[10px] text-slate-400 block">
+                  <label className="text-xs font-semibold text-gray-300">Annual Interest Rate</label>
+                  <span className="text-[10px] text-gray-400 block">
                     Based on Trust Score ({creditProfile?.trust_score ?? "70"}/100)
                   </span>
                 </div>
-                <span className="font-mono text-white font-extrabold text-lg">
-                  {interestRate.toFixed(1)}% p.a.
-                </span>
+                <span className="font-mono text-white font-extrabold text-lg">{interestRate.toFixed(1)}% p.a.</span>
               </div>
 
               <input
@@ -313,136 +288,105 @@ export default function LoanSimulatorPage() {
                 step={0.5}
                 value={interestRate}
                 onChange={(e) => setInterestRate(Number(e.target.value))}
-                className="w-full accent-purple-500 cursor-pointer h-2 bg-slate-800 rounded-lg appearance-none"
+                className="w-full accent-purple-500 cursor-pointer h-2 bg-black/40 rounded-lg appearance-none"
               />
 
-              <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                <span>8.0% (Prime)</span>
-                <span>14.5% (Standard)</span>
-                <span>20.0% (Elevated)</span>
-                <span>26.0% (Max)</span>
+              <div className="flex justify-between text-[10px] text-gray-500 font-mono">
+                <span>8% (Prime)</span>
+                <span>14.5% (Std)</span>
+                <span>20% (Elevated)</span>
+                <span>26% (Max)</span>
               </div>
             </div>
           </div>
 
           {/* Right Column: Dynamic Results & Cash Flow Impact (6 cols) */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-8 shadow-2xl backdrop-blur-xl space-y-6 relative overflow-hidden">
+            <div className="glass-card p-8 space-y-6 relative overflow-hidden">
               {/* Background Glow */}
-              <div
-                className={`absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none ${
-                  isOverborrowing ? "bg-rose-500" : "bg-cyan-500"
-                }`}
-              />
+              <div className={`absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none ${isOverborrowing ? "bg-red-500" : "bg-cyan-500"}`} />
 
               {/* Monthly EMI Hero Card */}
-              <div className="p-6 rounded-2xl border border-slate-800/80 bg-slate-950/80 text-center space-y-1">
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                  Estimated Monthly EMI
-                </span>
+              <div className="p-6 rounded-2xl border border-white/10 bg-black/40 text-center space-y-1 relative z-10">
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Estimated Monthly EMI</span>
                 <div className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 font-mono tracking-tight">
                   {formatINR(clientEmi.emi)}
                 </div>
-                <span className="text-[11px] text-slate-500 block pt-1">
+                <span className="text-[11px] text-gray-500 block pt-1">
                   Reducing-balance monthly installment for {tenureMonths} month(s)
                 </span>
               </div>
 
               {/* Over-Borrowing Protective Alert Banner */}
               {isOverborrowing && (
-                <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-950/25 text-amber-300 flex items-start gap-3">
+                <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 text-amber-300 flex items-start gap-3 relative z-10">
                   <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
                   <div className="space-y-1 text-xs">
-                    <span className="font-bold text-amber-400 block uppercase tracking-wider">
-                      Over-Borrowing Warning
-                    </span>
-                    <p className="text-slate-300 leading-relaxed">
+                    <span className="font-bold text-amber-400 block uppercase tracking-wider">Over-Borrowing Warning</span>
+                    <p className="text-gray-300 leading-relaxed">
                       {postSurplus < 0
-                        ? `Projected cash flow enters deficit (-₹${Math.abs(
-                            postSurplus
-                          ).toLocaleString(
-                            "en-IN"
-                          )}/mo). Reduce loan amount or extend tenure to avoid operational cash squeeze.`
-                        : `EMI consumes ${burdenPct.toFixed(
-                            1
-                          )}% of monthly surplus (safe benchmark ≤ 35%). Consider borrowing less.`}
+                        ? `Projected cash flow enters deficit (-₹${Math.abs(postSurplus).toLocaleString("en-IN")}/mo). Reduce loan amount or extend tenure to avoid operational cash squeeze.`
+                        : `EMI consumes ${burdenPct.toFixed(1)}% of monthly surplus (safe benchmark ≤ 35%). Consider borrowing less.`}
                     </p>
                   </div>
                 </div>
               )}
 
               {/* Metrics Breakdown Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/50">
-                  <span className="text-[11px] text-slate-400 block">Total Interest Payable</span>
+              <div className="grid grid-cols-2 gap-4 relative z-10">
+                <div className="p-4 rounded-xl border border-white/5 bg-black/20">
+                  <span className="text-[11px] text-gray-400 block">Total Interest Payable</span>
                   <span className="text-lg font-bold text-indigo-400 mt-0.5 block font-mono">
                     {formatINR(clientEmi.totalInterest)}
                   </span>
-                  <span className="text-[10px] text-slate-500 block mt-0.5">
+                  <span className="text-[10px] text-gray-500 block mt-0.5">
                     {((clientEmi.totalInterest / loanAmount) * 100).toFixed(1)}% of principal
                   </span>
                 </div>
 
-                <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/50">
-                  <span className="text-[11px] text-slate-400 block">Total Repayment Outflow</span>
+                <div className="p-4 rounded-xl border border-white/5 bg-black/20">
+                  <span className="text-[11px] text-gray-400 block">Total Repayment Outflow</span>
                   <span className="text-lg font-bold text-white mt-0.5 block font-mono">
                     {formatINR(clientEmi.totalRepayment)}
                   </span>
-                  <span className="text-[10px] text-slate-500 block mt-0.5">
+                  <span className="text-[10px] text-gray-500 block mt-0.5">
                     Principal + all interest
                   </span>
                 </div>
               </div>
 
               {/* Solvency & Cash Flow Impact Box */}
-              <div className="p-5 rounded-2xl border border-slate-800 bg-slate-950/60 space-y-4">
+              <div className="p-5 rounded-2xl border border-white/10 bg-black/40 space-y-4 relative z-10">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-300">
-                    Monthly Cash Flow Comparison
-                  </span>
-                  <span className="text-[11px] text-cyan-400 font-mono">
-                    Burden: {burdenPct.toFixed(1)}%
-                  </span>
+                  <span className="text-xs font-semibold text-gray-300">Monthly Cash Flow Comparison</span>
+                  <span className="text-[11px] text-cyan-400 font-mono">Burden: {burdenPct.toFixed(1)}%</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-1">
-                  <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <span className="text-[10px] text-slate-400 block">Current Net Surplus</span>
+                  <div className="p-3 rounded-xl bg-black/40 border border-white/5">
+                    <span className="text-[10px] text-gray-400 block">Current Net Surplus</span>
                     <span className="text-sm font-bold text-emerald-400 mt-0.5 block font-mono">
                       +{formatINR(netCashFlow)}/mo
                     </span>
                   </div>
 
-                  <div
-                    className={`p-3 rounded-xl border ${
-                      postSurplus >= 0
-                        ? "bg-slate-900/60 border-slate-800 text-emerald-400"
-                        : "bg-rose-950/20 border-rose-500/30 text-rose-400"
-                    }`}
-                  >
-                    <span className="text-[10px] text-slate-400 block">Post-Loan Surplus</span>
+                  <div className={`p-3 rounded-xl border ${postSurplus >= 0 ? "bg-black/40 border-white/5 text-emerald-400" : "bg-red-500/10 border-red-500/30 text-red-400"}`}>
+                    <span className="text-[10px] text-gray-400 block">Post-Loan Surplus</span>
                     <span className="text-sm font-bold mt-0.5 block font-mono">
-                      {postSurplus >= 0 ? "+" : ""}
-                      {formatINR(postSurplus)}/mo
+                      {postSurplus >= 0 ? "+" : ""}{formatINR(postSurplus)}/mo
                     </span>
                   </div>
                 </div>
 
                 {/* Progress bar */}
                 <div className="space-y-1">
-                  <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-black/40 rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-300 ${
-                        burdenPct <= 35
-                          ? "bg-emerald-500"
-                          : burdenPct <= 50
-                          ? "bg-amber-500"
-                          : "bg-rose-500"
-                      }`}
+                      className={`h-full rounded-full transition-all duration-300 ${burdenPct <= 35 ? "bg-emerald-500" : burdenPct <= 50 ? "bg-amber-500" : "bg-red-500"}`}
                       style={{ width: `${Math.min(100, Math.max(5, burdenPct))}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[10px] text-slate-500">
+                  <div className="flex justify-between text-[10px] text-gray-500">
                     <span>Safe (&le;35%)</span>
                     <span>Caution (35-50%)</span>
                     <span>Danger (&gt;50%)</span>
@@ -451,19 +395,18 @@ export default function LoanSimulatorPage() {
               </div>
 
               {/* Call to action */}
-              <div className="pt-2">
+              <div className="pt-2 relative z-10">
                 <Link
                   href={`/loan?amount=${loanAmount}&tenure=${tenureMonths}`}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white font-bold text-xs shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-2"
+                  className="btn btn-primary w-full justify-center"
                 >
-                  <span>Proceed to Loan Application</span>
-                  <ArrowRight className="h-4 w-4" />
+                  Proceed to Loan Application <ArrowRight className="h-4 w-4 ml-1" />
                 </Link>
               </div>
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

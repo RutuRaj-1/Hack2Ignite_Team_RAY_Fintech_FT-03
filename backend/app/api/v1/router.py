@@ -16,6 +16,7 @@ from app.api.v1.endpoints import (
     loans,
     schemes,
     transactions,
+    demo,
 )
 
 api_router = APIRouter(prefix="/api/v1")
@@ -43,3 +44,6 @@ api_router.include_router(schemes.router)
 
 # --- FT-01: Financial Literacy / AI Coach ---
 api_router.include_router(coach.router)
+
+# --- Demo Seed ---
+api_router.include_router(demo.router)

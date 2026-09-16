@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import {
   uploadTransactionsCsv,
   getTransactions,
@@ -12,7 +12,6 @@ import {
   ApiError,
 } from "@/lib/api";
 import {
-  ShieldCheck,
   Upload,
   FileText,
   CheckCircle2,
@@ -43,8 +42,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 const PAGE_SIZE = 20;
 
 export default function TransactionsPage() {
-  const router = useRouter();
-  const { firebaseUser, loading: authLoading, getIdToken } = useAuth();
+  const { firebaseUser, authLoading, getIdToken } = useAuth();
 
   const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
   const [total, setTotal] = useState(0);
@@ -57,13 +55,6 @@ export default function TransactionsPage() {
   const [uploadResult, setUploadResult] = useState<UploadSummary | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // ── Auth guard ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!authLoading && !firebaseUser) {
-      router.push("/login");
-    }
-  }, [authLoading, firebaseUser, router]);
 
   // ── Load transactions ────────────────────────────────────────────────────
   const loadTransactions = useCallback(
@@ -89,10 +80,10 @@ export default function TransactionsPage() {
   );
 
   useEffect(() => {
-    if (firebaseUser) {
+    if (!authLoading && firebaseUser) {
       loadTransactions(page);
     }
-  }, [firebaseUser, page, loadTransactions]);
+  }, [firebaseUser, authLoading, page, loadTransactions]);
 
   // ── Upload handler ───────────────────────────────────────────────────────
   const handleUpload = useCallback(
@@ -149,52 +140,9 @@ export default function TransactionsPage() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#0D1117] text-gray-100">
-      {/* ── Navbar ── */}
-      <header className="sticky top-0 z-40 bg-[#161B22]/80 backdrop-blur-md border-b border-gray-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <ShieldCheck className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              FIN<span className="text-blue-500">BRIDGE</span>
-            </span>
-          </Link>
-
-          <nav className="flex items-center gap-2">
-            <Link
-              href="/dashboard"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/transactions"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20"
-            >
-              Transactions
-            </Link>
-            <Link
-              href="/analytics"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
-            >
-              Analytics
-            </Link>
-          </nav>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <DashboardLayout>
+      <div className="space-y-8">
         {/* ── Page header ── */}
         <div className="flex items-start justify-between">
           <div>
@@ -203,16 +151,14 @@ export default function TransactionsPage() {
               Upload your bank statement CSV and view all categorized transactions.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/analytics"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium hover:bg-emerald-500/20 transition-colors"
-            >
-              <PieChart className="w-3.5 h-3.5" />
-              View Analytics
-              <ArrowUpRight className="w-3 h-3" />
-            </Link>
-          </div>
+          <Link
+            href="/analytics"
+            className="btn btn-outline"
+          >
+            <PieChart className="w-3.5 h-3.5" />
+            View Analytics
+            <ArrowUpRight className="w-3 h-3 ml-1" />
+          </Link>
         </div>
 
         {/* ── CSV Upload Zone ── */}
@@ -221,7 +167,7 @@ export default function TransactionsPage() {
           className={`relative rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-200 cursor-pointer ${
             dragging
               ? "border-blue-500 bg-blue-500/10"
-              : "border-gray-700 bg-[#161B22] hover:border-blue-500/50 hover:bg-blue-500/5"
+              : "border-gray-700 bg-black/20 hover:border-blue-500/50 hover:bg-blue-500/5"
           }`}
           onDragOver={(e) => {
             e.preventDefault();
@@ -254,7 +200,7 @@ export default function TransactionsPage() {
               </div>
               <div>
                 <p className="text-base font-semibold text-white">
-                  Drop your CSV file here or{" "}
+                  Drop your CSV file here (Demo Data) or{" "}
                   <span className="text-blue-400">click to browse</span>
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
@@ -271,10 +217,7 @@ export default function TransactionsPage() {
 
         {/* ── Upload error ── */}
         {uploadError && (
-          <div
-            id="upload-error-banner"
-            className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30"
-          >
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-sm font-medium text-red-300">Upload Failed</p>
@@ -291,10 +234,7 @@ export default function TransactionsPage() {
 
         {/* ── Upload result ── */}
         {uploadResult && (
-          <div
-            id="upload-result-banner"
-            className="rounded-2xl bg-[#161B22] border border-gray-800 p-6"
-          >
+          <div className="glass-card p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400" />
@@ -308,23 +248,23 @@ export default function TransactionsPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-[#0D1117] rounded-xl p-4 text-center">
+              <div className="bg-black/20 rounded-xl p-4 text-center border border-white/5">
                 <p className="text-2xl font-bold text-white">
                   {uploadResult.total_rows}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">Total Rows</p>
               </div>
-              <div className="bg-[#0D1117] rounded-xl p-4 text-center">
+              <div className="bg-emerald-500/5 rounded-xl p-4 text-center border border-emerald-500/10">
                 <p className="text-2xl font-bold text-emerald-400">
                   {uploadResult.accepted_rows}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">Accepted</p>
+                <p className="text-xs text-emerald-400/70 mt-1">Accepted</p>
               </div>
-              <div className="bg-[#0D1117] rounded-xl p-4 text-center">
+              <div className="bg-red-500/5 rounded-xl p-4 text-center border border-red-500/10">
                 <p className="text-2xl font-bold text-red-400">
                   {uploadResult.rejected_rows}
                 </p>
-                <p className="text-xs text-gray-400 mt-1">Rejected</p>
+                <p className="text-xs text-red-400/70 mt-1">Rejected</p>
               </div>
             </div>
 
@@ -353,14 +293,14 @@ export default function TransactionsPage() {
         )}
 
         {/* ── Transaction Table ── */}
-        <div className="rounded-2xl bg-[#161B22] border border-gray-800 overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+        <div className="glass-card overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
             <div className="flex items-center gap-3">
               <BarChart2 className="w-5 h-5 text-blue-400" />
               <h2 className="text-base font-semibold text-white">
                 All Transactions
               </h2>
-              <span className="text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-gray-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
                 {total} total
               </span>
             </div>
@@ -383,29 +323,29 @@ export default function TransactionsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-800">
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <tr className="border-b border-white/10 bg-white/5">
+                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         Date
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         Description
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         Merchant
                       </th>
-                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         Category
                       </th>
-                      <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      <th className="text-right px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         Amount
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-800/60">
+                  <tbody className="divide-y divide-white/5">
                     {transactions.map((txn) => (
                       <tr
                         key={txn.id}
-                        className="hover:bg-gray-800/20 transition-colors"
+                        className="hover:bg-white/5 transition-colors"
                       >
                         <td className="px-6 py-3.5 text-xs font-mono text-gray-400 whitespace-nowrap">
                           {txn.transaction_date}
@@ -447,8 +387,8 @@ export default function TransactionsPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-800">
-                  <p className="text-xs text-gray-500">
+                <div className="flex items-center justify-between px-6 py-4 border-t border-white/10 bg-white/5">
+                  <p className="text-xs text-gray-400">
                     Showing {page * PAGE_SIZE + 1}–
                     {Math.min((page + 1) * PAGE_SIZE, total)} of {total}
                   </p>
@@ -457,12 +397,12 @@ export default function TransactionsPage() {
                       id="prev-page-btn"
                       onClick={() => setPage((p) => Math.max(0, p - 1))}
                       disabled={page === 0}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 text-xs text-gray-300 disabled:opacity-40 hover:bg-gray-700 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                      className="btn btn-ghost !py-1.5 !px-3 !text-xs disabled:opacity-40"
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
                       Prev
                     </button>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 font-medium">
                       {page + 1} / {totalPages}
                     </span>
                     <button
@@ -471,7 +411,7 @@ export default function TransactionsPage() {
                         setPage((p) => Math.min(totalPages - 1, p + 1))
                       }
                       disabled={page >= totalPages - 1}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 text-xs text-gray-300 disabled:opacity-40 hover:bg-gray-700 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                      className="btn btn-ghost !py-1.5 !px-3 !text-xs disabled:opacity-40"
                     >
                       Next
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -485,9 +425,9 @@ export default function TransactionsPage() {
 
         {/* ── CTA to Analytics ── */}
         {transactions.length > 0 && (
-          <div className="rounded-2xl bg-gradient-to-r from-blue-900/30 to-emerald-900/30 border border-blue-500/20 p-6 flex items-center justify-between">
+          <div className="glass-card p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-blue-500/30 bg-gradient-to-r from-blue-900/20 to-emerald-900/20">
             <div>
-              <h3 className="text-base font-semibold text-white">
+              <h3 className="text-base font-bold text-white">
                 Ready to explore your financial insights?
               </h3>
               <p className="text-sm text-gray-400 mt-1">
@@ -496,14 +436,14 @@ export default function TransactionsPage() {
             </div>
             <Link
               href="/analytics"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/25 transition-colors shrink-0"
+              className="btn btn-primary whitespace-nowrap"
             >
               <TrendingUp className="w-4 h-4" />
               Analytics Dashboard
             </Link>
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
