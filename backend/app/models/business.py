@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from app.models.user import User
     from app.models.transaction import Transaction
     from app.models.fraud_alert import FraudAlert
+    from app.models.credit_profile import CreditProfile
 
 
 class Business(UUIDMixin, TimestampMixin, Base):
@@ -54,4 +55,9 @@ class Business(UUIDMixin, TimestampMixin, Base):
     # One-to-many: a business has many fraud alerts
     fraud_alerts: Mapped[list["FraudAlert"]] = relationship(  # noqa: F821
         "FraudAlert", back_populates="business", cascade="all, delete-orphan"
+    )
+
+    # One-to-many: a business has many credit profiles
+    credit_profiles: Mapped[list["CreditProfile"]] = relationship(  # noqa: F821
+        "CreditProfile", back_populates="business", cascade="all, delete-orphan"
     )

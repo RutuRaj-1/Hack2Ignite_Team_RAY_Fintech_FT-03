@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/lib/auth-context";
 import {
   FraudAlertResponse,
   FraudSummaryResponse,
@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 
 export default function FraudAlertsPage() {
-  const { user, token, loading: authLoading } = useAuth();
+  const { firebaseUser, getIdToken, loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [summary, setSummary] = useState<FraudSummaryResponse | null>(null);
@@ -35,6 +35,7 @@ export default function FraudAlertsPage() {
   const [filter, setFilter] = useState<string>("ALL");
 
   const fetchData = useCallback(async () => {
+    const token = await getIdToken();
     if (!token) return;
     setLoading(true);
     try {
@@ -51,17 +52,18 @@ export default function FraudAlertsPage() {
     } finally {
       setLoading(false);
     }
-  }, [token, filter]);
+  }, [getIdToken, filter]);
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!authLoading && !firebaseUser) {
       router.push("/login");
-    } else if (user && token) {
+    } else if (firebaseUser) {
       fetchData();
     }
-  }, [user, token, authLoading, router, fetchData]);
+  }, [firebaseUser, authLoading, router, fetchData]);
 
   const handleRunAnalysis = async () => {
+    const token = await getIdToken();
     if (!token) return;
     setAnalyzing(true);
     try {
@@ -81,7 +83,7 @@ export default function FraudAlertsPage() {
       maximumFractionDigits: 0,
     }).format(val);
 
-  if (authLoading || (!user && loading)) {
+  if (authLoading || (!firebaseUser && loading)) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-900 text-white">
         <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />

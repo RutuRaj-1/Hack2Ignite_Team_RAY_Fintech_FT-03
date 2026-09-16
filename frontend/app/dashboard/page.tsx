@@ -139,13 +139,19 @@ export default function DashboardPage() {
             <span className="text-xl font-bold tracking-tight text-white">
               FIN<span className="text-blue-500">BRIDGE</span>
             </span>
-            <span className="ml-2 text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
-              Part 04 Active
+            <span className="ml-2 text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
+              Part 05 Active
             </span>
           </Link>
 
           <div className="flex items-center gap-3">
             <nav className="hidden sm:flex items-center gap-1">
+              <Link
+                href="/credit-profile"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors"
+              >
+                Trust Score
+              </Link>
               <Link
                 href="/transactions"
                 className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
@@ -294,23 +300,26 @@ export default function DashboardPage() {
         <div>
           <h3 className="text-lg font-bold text-white mb-4">Platform Architecture Modules</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* FT-03: Micro-Lending (Core) */}
-            <div className="bg-[#161B22] border-2 border-blue-500/40 rounded-2xl p-6 relative overflow-hidden shadow-lg group hover:border-blue-500/70 transition-colors">
-              <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/30 flex items-center justify-center mb-4">
-                <CreditCard className="w-5 h-5 text-blue-400" />
+            {/* FT-03: Micro-Lending & Credit Scoring — LIVE in Part 05 */}
+            <Link
+              href="/credit-profile"
+              className="bg-[#161B22] border-2 border-cyan-500/40 rounded-2xl p-6 relative overflow-hidden shadow-lg group hover:border-cyan-500/70 transition-colors block"
+            >
+              <div className="w-10 h-10 rounded-xl bg-cyan-600/10 border border-cyan-500/30 flex items-center justify-center mb-4">
+                <CreditCard className="w-5 h-5 text-cyan-400" />
               </div>
-              <div className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 mb-2">
-                Core Problem Statement • FT-03
+              <div className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 mb-2">
+                Active • FT-03
               </div>
-              <h4 className="text-lg font-semibold text-white">AI Micro-Lending Hub</h4>
+              <h4 className="text-lg font-semibold text-white">Financial Trust Score</h4>
               <p className="text-xs text-gray-400 mt-2 leading-relaxed">
-                Alternative credit assessment combining GST, bank statements, transaction logs, and operational tenure.
+                Alternative behavioral credit score (0-100) synthesizing cash flow, consistency, expense discipline, and fraud telemetry.
               </p>
               <div className="mt-5 pt-4 border-t border-gray-800 flex items-center justify-between">
-                <span className="text-xs text-blue-400 font-medium">Coming in Next Step</span>
-                <span className="text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded">Part 03 Foundation</span>
+                <span className="text-xs text-cyan-400 font-medium">View Trust Profile →</span>
+                <span className="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-1 rounded">Part 05 Live</span>
               </div>
-            </div>
+            </Link>
 
             {/* FT-02: Fraud Detection — LIVE in Part 04 */}
             <Link

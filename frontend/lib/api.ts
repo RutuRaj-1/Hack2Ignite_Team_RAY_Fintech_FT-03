@@ -405,3 +405,81 @@ export async function getFraudSummary(
 ): Promise<FraudSummaryResponse> {
   return request<FraudSummaryResponse>("/api/v1/fraud/summary", {}, idToken);
 }
+
+// ============================================================================
+// FT-03 ALTERNATIVE CREDIT ASSESSMENT & FINANCIAL TRUST SCORE (PART 05)
+// ============================================================================
+
+export interface CreditComponentScores {
+  financial_stability: number;
+  cash_flow_health: number;
+  revenue_consistency: number;
+  expense_discipline: number;
+  repayment_capacity: number;
+  transaction_behavior: number;
+  fraud_risk: number;
+}
+
+export interface CreditFactor {
+  name: string;
+  description: string;
+  metric_name: string;
+  metric_value: string;
+  impact: "positive" | "negative";
+}
+
+export interface CreditMetrics {
+  avg_monthly_revenue: number;
+  avg_monthly_expense: number;
+  net_cash_flow: number;
+  expense_ratio: number;
+  revenue_std: number;
+  cash_flow_volatility: number;
+  transaction_frequency: number;
+  avg_transaction_value: number;
+  revenue_consistency: number;
+  fraud_alert_rate: number;
+  repayment_capacity: number;
+  positive_cash_flow_months_ratio: number;
+  active_months: number;
+  total_transactions: number;
+  business_age_years: number;
+  annual_turnover: number;
+}
+
+export interface CreditProfileResponse {
+  id: string;
+  business_id: string;
+  trust_score: number;
+  components: CreditComponentScores;
+  positive_factors: string[];
+  negative_factors: string[];
+  detailed_factors: CreditFactor[];
+  metrics: CreditMetrics;
+  disclaimer: string;
+  created_at: string;
+}
+
+export async function assessCredit(
+  idToken: string,
+  recalculateFraud: boolean = false
+): Promise<CreditProfileResponse> {
+  return request<CreditProfileResponse>(
+    "/api/v1/credit/assess",
+    {
+      method: "POST",
+      body: JSON.stringify({ recalculate_fraud: recalculateFraud }),
+    },
+    idToken
+  );
+}
+
+export async function getCreditProfile(
+  idToken: string
+): Promise<CreditProfileResponse> {
+  return request<CreditProfileResponse>(
+    "/api/v1/credit/profile",
+    { method: "GET" },
+    idToken
+  );
+}
