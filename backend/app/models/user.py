@@ -1,14 +1,10 @@
 """
-FINBRIDGE — User Model (Stub)
-Maps to auth module. Supabase auth.users compatible schema.
-Full implementation: Part 02.
+FINBRIDGE — User Model (Part 02)
+Fields: id, name, email, firebase_uid, password_hash, created_at, updated_at.
 """
 
-import uuid
-
 from sqlalchemy import Boolean, String
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 from app.models.base import TimestampMixin, UUIDMixin
@@ -17,15 +13,19 @@ from app.models.base import TimestampMixin, UUIDMixin
 class User(UUIDMixin, TimestampMixin, Base):
     """
     FINBRIDGE user account.
-    Designed to link with Supabase auth.users via shared UUID.
-    [STUB] — Full implementation in Part 02.
+    firebase_uid links this record to Firebase Auth (unique per user).
     """
 
     __tablename__ = "users"
 
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
-    hashed_password: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    firebase_uid: Mapped[str] = mapped_column(String(128), unique=True, nullable=False, index=True)
+    # Firebase owns the credential; password_hash stored optionally for reference
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    # One-to-one: a user has at most one business profile
+    business: Mapped["Business | None"] = relationship(  # noqa: F821
+        "Business", back_populates="owner", uselist=False, lazy="selectin"
+    )

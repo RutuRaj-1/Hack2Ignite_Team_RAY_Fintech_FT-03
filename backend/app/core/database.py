@@ -1,7 +1,9 @@
 """
-FINBRIDGE — Database Connection
-SQLAlchemy async engine + session factory.
-Designed for PostgreSQL with Supabase compatibility.
+FINBRIDGE — Database Connection (Part 02)
+- Supports both SQLite (dev) and PostgreSQL/Supabase (prod).
+- SQLite: no schema prefix, no connection pool.
+- PostgreSQL: public schema, connection pool.
+- Auto-creates tables on startup in dev mode.
 """
 
 from collections.abc import AsyncGenerator
@@ -18,16 +20,27 @@ from app.core.config import get_settings
 settings = get_settings()
 
 # ---------------------------------------------------------------------------
-# Engine
+# Engine — SQLite vs PostgreSQL
 # ---------------------------------------------------------------------------
 
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.app_debug,       # Log SQL in development
-    pool_pre_ping=True,            # Detect stale connections
-    pool_size=10,
-    max_overflow=20,
-)
+_is_sqlite = settings.is_sqlite
+
+if _is_sqlite:
+    # SQLite: no pool settings, check_same_thread=False required for async
+    engine = create_async_engine(
+        settings.database_url,
+        echo=settings.app_debug,
+        connect_args={"check_same_thread": False},
+    )
+else:
+    # PostgreSQL / Supabase
+    engine = create_async_engine(
+        settings.database_url,
+        echo=settings.app_debug,
+        pool_pre_ping=True,
+        pool_size=10,
+        max_overflow=20,
+    )
 
 # ---------------------------------------------------------------------------
 # Session Factory
@@ -41,17 +54,32 @@ AsyncSessionFactory = async_sessionmaker(
     autocommit=False,
 )
 
+
 # ---------------------------------------------------------------------------
 # Declarative Base
 # ---------------------------------------------------------------------------
 
 class Base(DeclarativeBase):
     """
-    Shared SQLAlchemy declarative base.
-    All FINBRIDGE ORM models inherit from this.
-    Schema: 'public' (Supabase default).
+    Shared declarative base.
+    No schema prefix here — SQLite doesn't support schemas.
+    PostgreSQL: set search_path=public in DATABASE_URL or via session event.
     """
-    __table_args__ = {"schema": "public"}
+    pass
+
+
+# ---------------------------------------------------------------------------
+# Table creation (development)
+# ---------------------------------------------------------------------------
+
+async def create_tables() -> None:
+    """
+    Create all tables that don't yet exist.
+    Called on app startup in development / SQLite mode.
+    In production, use Alembic migrations instead.
+    """
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 # ---------------------------------------------------------------------------
@@ -60,7 +88,7 @@ class Base(DeclarativeBase):
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
-    Yield an async database session for use as a FastAPI dependency.
+    Yield an async database session.
 
     Usage:
         @router.get("/example")

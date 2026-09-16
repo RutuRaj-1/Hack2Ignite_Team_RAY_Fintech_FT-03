@@ -15,6 +15,8 @@ from fastapi.responses import JSONResponse
 
 from app.api.v1.router import api_router
 from app.core.config import get_settings
+from app.core.database import create_tables
+from app.core.firebase_admin import get_firebase_app
 from app.utils.logger import configure_logging, get_logger
 
 settings = get_settings()
@@ -29,13 +31,26 @@ logger = get_logger("finbridge.main")
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage application startup and shutdown lifecycle."""
+    # Import all models so metadata is populated before create_tables()
+    import app.models  # noqa: F401
+
     logger.info(
         "FINBRIDGE API starting",
         environment=settings.app_env,
         version=settings.app_version,
+        database=settings.database_url.split("://")[0],
     )
+
+    # Auto-create tables (dev/SQLite). Use Alembic migrations in production.
+    await create_tables()
+    logger.info("Database tables ready")
+
+    # Initialize Firebase Admin SDK
+    get_firebase_app()
+
     yield
     logger.info("FINBRIDGE API shutting down")
+
 
 
 # ---------------------------------------------------------------------------

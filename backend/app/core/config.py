@@ -1,6 +1,6 @@
 """
-FINBRIDGE — Application Configuration
-Loaded from environment variables via Pydantic BaseSettings.
+FINBRIDGE — Application Configuration (Part 02)
+Added: Firebase service account path, SQLite dev default.
 """
 
 from functools import lru_cache
@@ -28,20 +28,21 @@ class Settings(BaseSettings):
     port: int = 8000
 
     # --- Database ---
-    database_url: str = "postgresql+asyncpg://postgres:password@localhost:5432/finbridge"
+    # Default to SQLite for zero-setup local development.
+    # Switch to postgresql+asyncpg://... for production/Supabase.
+    database_url: str = "sqlite+aiosqlite:///./finbridge.db"
 
     # --- Supabase (optional) ---
     supabase_url: str = ""
     supabase_anon_key: str = ""
     supabase_service_role_key: str = ""
 
-    # --- JWT ---
-    jwt_algorithm: str = "HS256"
-    jwt_access_token_expire_minutes: int = 30
-    jwt_refresh_token_expire_days: int = 7
+    # --- Firebase Admin ---
+    # Path to Firebase service account JSON (never commit this file).
+    firebase_service_account_path: str = "./firebase-service-account.json"
 
     # --- CORS ---
-    allowed_origins: str = "http://localhost:3000"
+    allowed_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     # --- ML ---
     ml_models_path: str = "./data/models"
@@ -53,6 +54,10 @@ class Settings(BaseSettings):
     @property
     def is_production(self) -> bool:
         return self.app_env == "production"
+
+    @property
+    def is_sqlite(self) -> bool:
+        return self.database_url.startswith("sqlite")
 
 
 @lru_cache

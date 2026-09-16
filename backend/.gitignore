@@ -1,0 +1,48 @@
+# ============================================================
+# FINBRIDGE — Backend .gitignore
+# ============================================================
+
+# --- Secrets (NEVER commit these) ---
+.env
+firebase-service-account.json
+*.pem
+*.key
+*.p12
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# --- SQLite dev database ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Test coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# --- Build artifacts ---
+dist/
+build/
+*.egg-info/
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+
+# --- ML models (large files) ---
+data/models/*.pkl
+data/models/*.joblib
+data/raw/*.csv
+data/raw/*.json

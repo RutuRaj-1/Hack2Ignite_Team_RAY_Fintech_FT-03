@@ -27,12 +27,6 @@ interface FeatureCardProps {
   delay: string;
 }
 
-interface StatProps {
-  value: string;
-  label: string;
-  delay: string;
-}
-
 // ────────────────────────────────────────────────────────────
 // Sub-components
 // ────────────────────────────────────────────────────────────
@@ -71,12 +65,12 @@ function NavBar() {
 
         {/* CTA */}
         <div className="flex items-center gap-3">
-          <button id="nav-login-btn" className="btn btn-ghost text-sm py-2 px-4">
+          <Link href="/login" id="nav-login-btn" className="btn btn-ghost text-sm py-2 px-4">
             Sign In
-          </button>
-          <button id="nav-apply-btn" className="btn btn-primary text-sm py-2 px-5">
+          </Link>
+          <Link href="/register" id="nav-apply-btn" className="btn btn-primary text-sm py-2 px-5">
             Apply Now
-          </button>
+          </Link>
         </div>
       </div>
     </nav>
@@ -129,13 +123,13 @@ function HeroSection() {
 
         {/* CTA buttons */}
         <div className="animate-fade-in-up delay-300 flex flex-wrap gap-4 justify-center">
-          <button id="hero-apply-btn" className="btn btn-primary text-base py-3 px-8">
+          <Link href="/register" id="hero-apply-btn" className="btn btn-primary text-base py-3 px-8">
             Get Your Loan Score
             <ArrowRight size={18} />
-          </button>
-          <button id="hero-learn-btn" className="btn btn-ghost text-base py-3 px-8">
+          </Link>
+          <a href="#features" id="hero-learn-btn" className="btn btn-ghost text-base py-3 px-8">
             See How It Works
-          </button>
+          </a>
         </div>
 
         {/* Trust row */}

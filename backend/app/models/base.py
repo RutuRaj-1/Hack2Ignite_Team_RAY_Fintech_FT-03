@@ -1,13 +1,12 @@
 """
-FINBRIDGE — SQLAlchemy Models Base
-All models use UUID primary keys for Supabase compatibility.
+FINBRIDGE — SQLAlchemy Models Base (Part 02)
+Uses dialect-agnostic Uuid type (SQLite + PostgreSQL compatible).
 """
 
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import DateTime, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -30,10 +29,13 @@ class TimestampMixin:
 
 
 class UUIDMixin:
-    """Adds UUID primary key (compatible with Supabase auth.users)."""
+    """
+    Adds UUID primary key.
+    Uses sqlalchemy.Uuid (dialect-agnostic) — works with SQLite and PostgreSQL.
+    """
 
     id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+        Uuid(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
         nullable=False,
