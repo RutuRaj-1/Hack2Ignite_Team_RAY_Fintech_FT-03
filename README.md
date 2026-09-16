@@ -95,29 +95,6 @@ curl http://localhost:8000/health
 # API docs
 open http://localhost:8000/docs
 ```
-
----
-
-## API Endpoints (Part 01 — Foundation)
-
-| Method | Path | Status |
-|--------|------|--------|
-| GET | `/health` | ✅ Live |
-| GET | `/api/v1/health` | ✅ Live |
-| POST | `/api/v1/auth/*` | 🔜 Part 02 |
-| CRUD | `/api/v1/business/*` | 🔜 Part 02 |
-| CRUD | `/api/v1/loans/*` | 🔜 Part 02 |
-| CRUD | `/api/v1/transactions/*` | 🔜 Part 02 |
-| GET | `/api/v1/analytics/*` | 🔜 Part 02 |
-| GET | `/api/v1/schemes/*` | 🔜 Part 02 |
-| GET | `/api/v1/credit/*` | 🔜 Part 03 |
-| GET | `/api/v1/fraud/*` | 🔜 Part 03 |
-| POST | `/api/v1/coach/*` | 🔜 Part 03 |
-
-See [docs/api-overview.md](docs/api-overview.md) for the full endpoint reference.
-
----
-
 ## Documentation
 
 - [Architecture](docs/architecture.md) — System design, data flow, module map
@@ -126,6 +103,3 @@ See [docs/api-overview.md](docs/api-overview.md) for the full endpoint reference
 
 ---
 
-## License
-
-MIT © 2026 Team RAY
