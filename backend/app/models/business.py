@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.models.user import User
     from app.models.transaction import Transaction
+    from app.models.fraud_alert import FraudAlert
 
 
 class Business(UUIDMixin, TimestampMixin, Base):
@@ -48,4 +49,9 @@ class Business(UUIDMixin, TimestampMixin, Base):
     # One-to-many: a business has many transactions
     transactions: Mapped[list["Transaction"]] = relationship(  # noqa: F821
         "Transaction", back_populates="business", cascade="all, delete-orphan"
+    )
+
+    # One-to-many: a business has many fraud alerts
+    fraud_alerts: Mapped[list["FraudAlert"]] = relationship(  # noqa: F821
+        "FraudAlert", back_populates="business", cascade="all, delete-orphan"
     )

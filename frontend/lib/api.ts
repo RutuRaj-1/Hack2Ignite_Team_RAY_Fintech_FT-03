@@ -321,3 +321,87 @@ export async function getAnalyticsRevenueTrend(
     idToken
   );
 }
+
+// ============================================================================
+// FT-02 FRAUD & RISK INTELLIGENCE (PART 04)
+// ============================================================================
+
+export interface RuleResult {
+  rule_name: string;
+  triggered: boolean;
+  severity: "LOW" | "MEDIUM" | "HIGH";
+  reason: string;
+}
+
+export interface TransactionSummary {
+  id: string;
+  transaction_date: string;
+  amount: number;
+  transaction_type: string;
+  category: string;
+  merchant: string | null;
+  description: string | null;
+}
+
+export interface FraudAlertResponse {
+  id: string;
+  transaction_id: string;
+  business_id: string;
+  risk_score: number;
+  risk_level: "LOW" | "MEDIUM" | "HIGH";
+  detected_reasons: RuleResult[];
+  model_type: string;
+  status: string;
+  created_at: string;
+  transaction?: TransactionSummary;
+}
+
+export interface FraudAlertListResponse {
+  alerts: FraudAlertResponse[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface RiskLevelCount {
+  count: number;
+  percentage: number;
+}
+
+export interface FraudSummaryResponse {
+  total_transactions: number;
+  analyzed_transactions: number;
+  low_risk: RiskLevelCount;
+  medium_risk: RiskLevelCount;
+  high_risk: RiskLevelCount;
+  open_alerts: number;
+}
+
+export async function runFraudAnalysis(
+  idToken: string
+): Promise<{ success: boolean; message: string; analyzed: number }> {
+  return request<{ success: boolean; message: string; analyzed: number }>(
+    "/api/v1/fraud/analyze",
+    { method: "POST" },
+    idToken
+  );
+}
+
+export async function getFraudAlerts(
+  idToken: string,
+  riskLevel?: string,
+  limit: number = 50,
+  offset: number = 0
+): Promise<FraudAlertListResponse> {
+  let url = `/api/v1/fraud/alerts?limit=${limit}&offset=${offset}`;
+  if (riskLevel) {
+    url += `&risk_level=${riskLevel}`;
+  }
+  return request<FraudAlertListResponse>(url, {}, idToken);
+}
+
+export async function getFraudSummary(
+  idToken: string
+): Promise<FraudSummaryResponse> {
+  return request<FraudSummaryResponse>("/api/v1/fraud/summary", {}, idToken);
+}

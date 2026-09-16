@@ -30,6 +30,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from app.models.business import Business
+    from app.models.fraud_alert import FraudAlert
 
 # Valid category values — used for validation and display
 TRANSACTION_CATEGORIES = [
@@ -92,4 +93,9 @@ class Transaction(UUIDMixin, TimestampMixin, Base):
     # Many-to-one: each transaction belongs to one business
     business: Mapped["Business"] = relationship(  # noqa: F821
         "Business", back_populates="transactions"
+    )
+
+    # One-to-one: each transaction may have one fraud alert
+    fraud_alert: Mapped["FraudAlert | None"] = relationship(  # noqa: F821
+        "FraudAlert", back_populates="transaction", uselist=False, cascade="all, delete-orphan"
     )

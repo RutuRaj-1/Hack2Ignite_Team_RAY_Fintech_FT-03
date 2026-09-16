@@ -105,3 +105,13 @@ date,description,amount,type,merchant
 2026-06-26,Loan EMI repayment to HDFC Bank,12500,debit,HDFC Bank
 2026-06-28,Customer payment received for flex board printing,17500,credit,Local Advertising
 2026-06-30,Raw material purchase - paper finishing rolls,6500,debit,Premium Papers
+2026-07-01,Large bulk order payment from overseas client - digital print run,580000,credit,GlobalPrint Solutions Inc
+2026-07-02,Urgent wire transfer for printing equipment deposit,420000,debit,Overseas Equipment Corp
+2026-07-03,Customer advance payment for annual calendar project,320000,credit,State Bank of India Vendor
+2026-07-03,Immediate supplier payment - stock clearance deal,290000,debit,Unknown Wholesale Depot
+2026-07-05,Bulk stationery supplies purchase,18500,debit,City Stationery Hub
+2026-07-05,Printing consumables restocking,21000,debit,Ink World
+2026-07-05,Lamination material purchase,19000,debit,Print Supply Hub
+2026-07-05,Paper roll purchase bulk discount,22000,debit,Star Paper Mart
+2026-07-05,UV coating stock purchase,17500,debit,Premium Papers
+2026-07-05,Binding materials monthly stock,15000,debit,Binding House

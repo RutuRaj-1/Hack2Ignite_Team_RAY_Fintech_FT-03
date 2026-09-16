@@ -139,8 +139,8 @@ export default function DashboardPage() {
             <span className="text-xl font-bold tracking-tight text-white">
               FIN<span className="text-blue-500">BRIDGE</span>
             </span>
-            <span className="ml-2 text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
-              Part 03 Active
+            <span className="ml-2 text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
+              Part 04 Active
             </span>
           </Link>
 
@@ -154,9 +154,15 @@ export default function DashboardPage() {
               </Link>
               <Link
                 href="/analytics"
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
               >
                 Analytics
+              </Link>
+              <Link
+                href="/fraud-alerts"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-colors"
+              >
+                Fraud Engine
               </Link>
             </nav>
 
@@ -306,22 +312,26 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* FT-02: Fraud Detection */}
-            <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-6 relative group hover:border-gray-700 transition-colors">
+            {/* FT-02: Fraud Detection — LIVE in Part 04 */}
+            <Link
+              href="/fraud-alerts"
+              className="bg-[#161B22] border-2 border-red-500/40 rounded-2xl p-6 relative group hover:border-red-500/70 transition-colors block"
+            >
               <div className="w-10 h-10 rounded-xl bg-red-600/10 border border-red-500/20 flex items-center justify-center mb-4">
                 <ShieldCheck className="w-5 h-5 text-red-400" />
               </div>
               <div className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-red-500/10 text-red-300 mb-2">
-                Supporting • FT-02
+                Active • FT-02
               </div>
               <h4 className="text-lg font-semibold text-white">Fraud & Anomaly Shield</h4>
               <p className="text-xs text-gray-400 mt-2 leading-relaxed">
                 Real-time isolation forest and autoencoder pipeline detecting circular invoicing and forged statements.
               </p>
               <div className="mt-5 pt-4 border-t border-gray-800 flex items-center justify-between">
-                <span className="text-xs text-gray-400">Architecture Ready</span>
+                <span className="text-xs text-red-400 font-medium">View Alerts →</span>
+                <span className="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-1 rounded">Part 04 Live</span>
               </div>
-            </div>
+            </Link>
 
             {/* FT-01: Literacy */}
             <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-6 relative group hover:border-gray-700 transition-colors">
@@ -385,9 +395,9 @@ export default function DashboardPage() {
                   <TrendingUp className="w-4 h-4" />
                   <span>Hackathon State</span>
                 </div>
-                <h4 className="text-base font-bold text-white">Part 03 Complete</h4>
+                <h4 className="text-base font-bold text-white">Part 04 Complete</h4>
                 <p className="text-xs text-gray-400 mt-2">
-                  Transaction model, CSV upload pipeline, keyword categorization, analytics engine, unit tests, and frontend charts deployed.
+                  Hybrid rule & ML engine deployed. Anomaly detection via Isolation Forest and 6 rule signals active.
                 </p>
               </div>
               <div className="text-[11px] text-gray-500 mt-4">
