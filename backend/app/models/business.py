@@ -38,3 +38,8 @@ class Business(UUIDMixin, TimestampMixin, Base):
     owner: Mapped["User"] = relationship(  # noqa: F821
         "User", back_populates="business"
     )
+
+    # One-to-many: a business has many transactions
+    transactions: Mapped[list["Transaction"]] = relationship(  # noqa: F821
+        "Transaction", back_populates="business", cascade="all, delete-orphan"
+    )

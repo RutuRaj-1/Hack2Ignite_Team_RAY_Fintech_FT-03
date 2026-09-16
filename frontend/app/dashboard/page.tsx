@@ -140,11 +140,26 @@ export default function DashboardPage() {
               FIN<span className="text-blue-500">BRIDGE</span>
             </span>
             <span className="ml-2 text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
-              Part 02 Active
+              Part 03 Active
             </span>
           </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <nav className="hidden sm:flex items-center gap-1">
+              <Link
+                href="/transactions"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+              >
+                Transactions
+              </Link>
+              <Link
+                href="/analytics"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+              >
+                Analytics
+              </Link>
+            </nav>
+
             <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold text-gray-200">
                 {dbUser?.name || firebaseUser?.displayName || "MSME Owner"}
@@ -342,22 +357,26 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* FT-05: Expense Analytics */}
-            <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-6 relative group hover:border-gray-700 transition-colors">
+            {/* FT-05: Expense Analytics — LIVE in Part 03 */}
+            <Link
+              href="/analytics"
+              className="bg-[#161B22] border-2 border-emerald-500/40 rounded-2xl p-6 relative group hover:border-emerald-500/70 transition-colors block"
+            >
               <div className="w-10 h-10 rounded-xl bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center mb-4">
                 <PieChart className="w-5 h-5 text-emerald-400" />
               </div>
               <div className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 mb-2">
-                Supporting • FT-05
+                Active • FT-05
               </div>
               <h4 className="text-lg font-semibold text-white">MSME Expense Analytics</h4>
               <p className="text-xs text-gray-400 mt-2 leading-relaxed">
-                Categorized cash flow forecasts, working capital runway calculation, and vendor payment tracking.
+                CSV upload, categorized transactions, revenue &amp; expense trends, cash-flow volatility.
               </p>
               <div className="mt-5 pt-4 border-t border-gray-800 flex items-center justify-between">
-                <span className="text-xs text-gray-400">Architecture Ready</span>
+                <span className="text-xs text-emerald-400 font-medium">Open Analytics →</span>
+                <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded">Part 03 Live</span>
               </div>
-            </div>
+            </Link>
 
             {/* Quick Status Box */}
             <div className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-500/20 rounded-2xl p-6 flex flex-col justify-between">
@@ -366,9 +385,9 @@ export default function DashboardPage() {
                   <TrendingUp className="w-4 h-4" />
                   <span>Hackathon State</span>
                 </div>
-                <h4 className="text-base font-bold text-white">Part 02 Complete</h4>
+                <h4 className="text-base font-bold text-white">Part 03 Complete</h4>
                 <p className="text-xs text-gray-400 mt-2">
-                  Database models, Firebase auth sync, backend JWT verification, business profile onboarding, and secure user routing established.
+                  Transaction model, CSV upload pipeline, keyword categorization, analytics engine, unit tests, and frontend charts deployed.
                 </p>
               </div>
               <div className="text-[11px] text-gray-500 mt-4">

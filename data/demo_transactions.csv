@@ -1,0 +1,107 @@
+date,description,amount,type,merchant
+2026-01-03,Customer payment received for digital printing order,45000,credit,Ravi Enterprises
+2026-01-05,Customer payment received for design services,12500,credit,Mehta Traders
+2026-01-08,Inventory purchase - printing paper stock,18000,debit,Star Paper Mart
+2026-01-10,Monthly office rent payment,25000,debit,Landlord Suresh Kumar
+2026-01-10,Electricity bill payment January,3800,debit,BESCOM
+2026-01-12,Customer payment received for signage work,22000,credit,City Signage Co
+2026-01-15,Staff salary disbursement January,65000,debit,Employee Payroll
+2026-01-17,Fuel expenses for delivery vehicle,1800,debit,HP Petrol Pump
+2026-01-18,Customer payment received for banner printing,8500,credit,Suresh Banners
+2026-01-20,Raw material purchase - vinyl rolls,9500,debit,Print Supply Hub
+2026-01-22,Social media advertising campaign,4000,debit,Meta Ads
+2026-01-22,Customer payment received for corporate stationery,31000,credit,Infosys Vendor
+2026-01-25,Courier delivery charges,1200,debit,Blue Dart Courier
+2026-01-26,Loan EMI repayment to HDFC Bank,12500,debit,HDFC Bank
+2026-01-28,Customer payment received for t-shirt printing,16500,credit,Event Solutions
+2026-01-30,Stock purchase - ink cartridges,7200,debit,Ink World
+2026-02-03,Customer payment received for calendar printing,38000,credit,Corporate Calendar Co
+2026-02-05,Customer payment received for business cards,9500,credit,New Ventures Pvt Ltd
+2026-02-08,Inventory purchase - lamination sheets,11500,debit,Print Supply Hub
+2026-02-10,Monthly office rent payment,25000,debit,Landlord Suresh Kumar
+2026-02-10,Electricity bill payment February,3500,debit,BESCOM
+2026-02-12,Customer payment received for flex printing,14000,credit,Outdoor Media
+2026-02-14,Internet broadband bill,2200,debit,Airtel Business
+2026-02-15,Staff salary disbursement February,65000,debit,Employee Payroll
+2026-02-17,Transport freight charges,2200,debit,Express Logistics
+2026-02-18,Customer payment received for annual report printing,55000,credit,Bharat Corp
+2026-02-20,Raw material purchase - binding materials,6800,debit,Binding House
+2026-02-22,Google Ads campaign payment,3500,debit,Google Ads
+2026-02-24,Delivery vehicle fuel expenses,1600,debit,Shell Petrol Pump
+2026-02-25,Customer payment received for wedding invitation cards,19500,credit,Patel Events
+2026-02-26,Loan EMI repayment to HDFC Bank,12500,debit,HDFC Bank
+2026-03-02,Customer payment received for product catalogue,42000,credit,Sunrise Exports
+2026-03-04,Customer payment received for office stationery,11000,credit,ABC Solutions
+2026-03-06,Inventory purchase - printing paper bulk,21000,debit,Star Paper Mart
+2026-03-10,Monthly office rent payment,25000,debit,Landlord Suresh Kumar
+2026-03-10,Electricity bill payment March,4100,debit,BESCOM
+2026-03-12,Customer payment received for trade show banners,28000,credit,ExpoWorld India
+2026-03-13,Stock purchase - toner cartridges,8500,debit,Ink World
+2026-03-15,Staff salary disbursement March,65000,debit,Employee Payroll
+2026-03-16,Marketing agency fee,6000,debit,Digital Boost Agency
+2026-03-18,Customer payment received for packaging labels,17000,credit,FreshPack Foods
+2026-03-20,Courier charges for client deliveries,1500,debit,DTDC Courier
+2026-03-22,Freight charges for raw material delivery,2800,debit,Express Logistics
+2026-03-22,Customer payment received for greeting cards,7500,credit,Celebration Store
+2026-03-25,Internet broadband bill,2200,debit,Airtel Business
+2026-03-26,Loan EMI repayment to HDFC Bank,12500,debit,HDFC Bank
+2026-03-28,Customer payment received for corporate ID cards,13500,credit,HR Solutions India
+2026-03-30,Raw material purchase - specialty paper,14000,debit,Premium Papers
+2026-04-01,Customer payment received for annual calendar printing,48000,credit,State Bank Vendor
+2026-04-03,Customer payment received for brochure printing,23000,credit,Pharma Printers
+2026-04-05,Inventory purchase - printing ink bulk,16500,debit,Ink World
+2026-04-07,Monthly office rent payment,25000,debit,Landlord Suresh Kumar
+2026-04-07,Electricity bill payment April,3600,debit,BESCOM
+2026-04-09,Customer payment received for menu card printing,9000,credit,Spice Garden Restaurant
+2026-04-12,Staff salary disbursement April,65000,debit,Employee Payroll
+2026-04-14,Social media promotion campaign,5000,debit,Meta Ads
+2026-04-15,Customer payment received for product labels,21000,credit,Nature Organic
+2026-04-16,Fuel expenses delivery run,1900,debit,HP Petrol Pump
+2026-04-18,Stock purchase - finishing materials,7800,debit,Print Supply Hub
+2026-04-20,Customer payment received for real estate brochures,35000,credit,Dream Homes Realty
+2026-04-22,Courier and logistics charges,1800,debit,Blue Dart Courier
+2026-04-24,Internet broadband bill,2200,debit,Airtel Business
+2026-04-25,Customer payment received for school year books,44000,credit,Green Meadows School
+2026-04-26,Loan EMI repayment to HDFC Bank,12500,debit,HDFC Bank
+2026-04-28,Raw material purchase - foil stickers,5500,debit,Sticker Bazaar
+2026-04-30,Customer payment received for invoice books,6500,credit,Sharma Traders
+2026-05-02,Customer payment received for corporate directory,31000,credit,Tech Park Management
+2026-05-04,Customer payment received for event tickets,14000,credit,Cultural Society
+2026-05-06,Inventory purchase - printing paper,19500,debit,Star Paper Mart
+2026-05-08,Monthly office rent payment,25000,debit,Landlord Suresh Kumar
+2026-05-08,Electricity bill payment May,4200,debit,BESCOM
+2026-05-10,Customer payment received for pharma packaging,56000,credit,MediCare Labs
+2026-05-12,Staff salary disbursement May,65000,debit,Employee Payroll
+2026-05-13,Raw material purchase - coated paper,12000,debit,Premium Papers
+2026-05-15,Marketing digital campaign,4500,debit,Google Ads
+2026-05-16,Customer payment received for certificate printing,11500,credit,State University
+2026-05-18,Transport and freight charges,2500,debit,Express Logistics
+2026-05-19,Fuel expenses for delivery,2000,debit,Shell Petrol Pump
+2026-05-20,Customer payment received for customized gifts,18000,credit,Gifting Gallery
+2026-05-22,Stock purchase - UV coating material,9000,debit,Ink World
+2026-05-24,Internet broadband bill,2200,debit,Airtel Business
+2026-05-24,Courier delivery charges,1400,debit,DTDC Courier
+2026-05-25,Customer payment received for hotel brochures,26000,credit,Grand Palace Hotel
+2026-05-26,Loan EMI repayment to HDFC Bank,12500,debit,HDFC Bank
+2026-05-28,Customer payment received for retail packaging,33000,credit,FashionZone
+2026-05-30,Raw material purchase - binding wire,4200,debit,Binding House
+2026-06-01,Customer payment received for magazine printing,72000,credit,Deccan Herald Media
+2026-06-03,Customer payment received for product labels,24000,credit,Spice World Foods
+2026-06-05,Inventory purchase - printing stock monthly,22000,debit,Star Paper Mart
+2026-06-07,Monthly office rent payment,25000,debit,Landlord Suresh Kumar
+2026-06-07,Electricity bill payment June,3900,debit,BESCOM
+2026-06-09,Customer payment received for political campaign materials,38000,credit,Campaign Manager
+2026-06-12,Staff salary disbursement June,65000,debit,Employee Payroll
+2026-06-13,Social media advertising spend,6000,debit,Meta Ads
+2026-06-14,Customer payment received for security passes,15000,credit,InfoTech Campus
+2026-06-16,Raw material purchase - specialty inks,11000,debit,Ink World
+2026-06-17,Transport freight delivery,3000,debit,Express Logistics
+2026-06-18,Customer payment received for school stationery,29000,credit,Wisdom School
+2026-06-20,Fuel expenses vehicle,2200,debit,HP Petrol Pump
+2026-06-20,Stock purchase - lamination rolls,8000,debit,Print Supply Hub
+2026-06-22,Internet broadband bill,2200,debit,Airtel Business
+2026-06-23,Customer payment received for trade catalogue,41000,credit,Export House India
+2026-06-24,Courier and logistics,1600,debit,Blue Dart Courier
+2026-06-26,Loan EMI repayment to HDFC Bank,12500,debit,HDFC Bank
+2026-06-28,Customer payment received for flex board printing,17500,credit,Local Advertising
+2026-06-30,Raw material purchase - paper finishing rolls,6500,debit,Premium Papers
