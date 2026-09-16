@@ -1,105 +1,116 @@
 # FINBRIDGE
 ### AI-Powered Inclusive Micro-Lending & Financial Intelligence Platform
 
-> **Team RAY** — Ruturaj Vasudev Bhome (VIT Pune) & Akhilesh Lalitkumar Dhumal (GHRCEM Pune)  
-> **Hackathon:** Hack2Ignite 2026  
-> **Core Problem Statement:** FT-03 — Secure Micro-Lending for MSMEs with Alternative Credit Assessment
+> **Team RAY** — Ruturaj Vasudev Bhome & Akhilesh Lalitkumar Dhumal  
+> **Hackathon:** Hack2Ignite  
 
 ---
 
-## What is FINBRIDGE?
+## 1. Project Overview
+FINBRIDGE breaks the credit barrier for India's 63 million MSMEs who lack a CIBIL score. By building a creditworthiness profile from real financial exhaust (UPI transactions, cash flow volatility, expense discipline), FINBRIDGE replaces traditional collateral with mathematical trust. 
 
-FINBRIDGE breaks the credit barrier for India's 63 million MSMEs who are shut out of traditional lending because they have no CIBIL score. Instead of relying on credit bureaus, FINBRIDGE builds a creditworthiness profile from your **real financial activity** — UPI transactions, GST filings, seasonal cash flows, and utility regularity.
+## 2. Problem Statement Mapping
+Our architecture seamlessly integrates 5 problem statements into one unified core:
+- **FT-03 (Core): Secure Micro-Lending.** The central engine that issues and assesses micro-loans using alternative credit scoring.
+- **FT-05: Financial Analytics.** Ingests raw CSVs and normalizes them into structured cash flow dashboards to feed the credit engine.
+- **FT-02: Fraud/Risk Signal.** Uses Isolation Forest ML to detect anomalous transactions, protecting the lender and lowering the borrower's Trust Score.
+- **FT-04: Government Scheme Discovery.** Evaluates the MSME profile to automatically suggest MUDRA or PMEGP grants.
+- **FT-01: Financial Literacy.** A contextual AI Coach that grounds its answers in the user's actual financial telemetry to explain EMIs, cash flow, and repayment burden.
 
-### Problem Statements Addressed
-
-| Code | Problem | Our Solution |
-|------|---------|-------------|
-| **FT-03** (Core) | Secure Micro-Lending | Alternative credit scoring + loan lifecycle |
-| FT-05 | MSME Expense Analytics | Transaction intelligence + cash flow dashboards |
-| FT-02 | Fraud Detection | ML anomaly detection on transactions |
-| FT-04 | Government Scheme Discovery | Automated MUDRA/PMEGP scheme matching |
-| FT-01 | Financial Literacy | AI financial coach (Hindi + English) |
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 16 · TypeScript · Tailwind CSS v4 · Recharts |
-| Backend | Python 3.14 · FastAPI · Pydantic v2 · SQLAlchemy 2.0 (async) |
-| Database | PostgreSQL 15+ · Supabase-compatible schema |
-| ML | scikit-learn · pandas · numpy |
-| Infrastructure | Supabase (planned) · Vercel (frontend) · Railway (backend) |
-
----
-
-## Project Structure
-
+## 3. Architecture
+```text
+Financial Data (Bank/CSV)
+       ↓
+FT-05 Analytics (Normalization & Categorization)
+       ↓
+FT-02 Risk (Anomaly Detection & Fraud Shield)
+       ↓
+FT-03 Alternative Credit (Trust Score & Affordability Math)
+       ↓
+Loan Assessment & Repayment Simulation
+       ↓
+(Supporting Layers: FT-04 Scheme Discovery & FT-01 Financial Coaching)
 ```
+
+## 4. Tech Stack
+- **Frontend:** Next.js 16, TypeScript, Tailwind CSS, Recharts
+- **Backend:** Python 3.14, FastAPI, Pydantic, SQLAlchemy (Async)
+- **Database:** SQLite (Dev) / PostgreSQL via asyncpg (Prod)
+- **ML / Risk:** scikit-learn (Isolation Forest), Pandas, Numpy
+- **Authentication:** Firebase Auth (Stateless JWTs)
+- **AI Coach:** Local Ollama / Remote LLM Fallback (No LangChain bloat)
+
+## 5. Folder Structure
+```text
 finbridge/
 ├── frontend/          Next.js application
 ├── backend/           FastAPI modular monolith
 │   └── app/
 │       ├── main.py    FastAPI app factory
 │       ├── core/      Config, database, security
-│       ├── api/       REST endpoints (9 modules)
+│       ├── api/       REST endpoints (v1 router)
 │       ├── models/    SQLAlchemy ORM models
-│       ├── schemas/   Pydantic schemas
-│       ├── services/  Business logic layer
-│       └── ml/        ML pipeline (credit + fraud)
-├── database/          PostgreSQL schema & migrations
-├── data/              ML training data (raw/processed/models)
-└── docs/              Architecture, API, and dev plan
+│       ├── schemas/   Pydantic validation schemas
+│       ├── services/  Business logic (Credit, Coach, Transactions)
+│       └── ml/        Risk rules & Isolation Forest Engine
+├── docs/              Architecture, API docs, Demo scripts
+└── data/              Sample CSVs
 ```
 
----
+## 6. Local Setup
+**Prerequisites:** Node.js 20+, Python 3.12+, Firebase Project (for Auth).
 
-## Quick Start
+## 7. Environment Variables
+**Frontend (`frontend/.env.local`):**
+- `NEXT_PUBLIC_API_URL=http://localhost:8000`
+- `NEXT_PUBLIC_FIREBASE_API_KEY=...`
 
-### Prerequisites
-- Node.js 20+
-- Python 3.12+
-- PostgreSQL 15+ (or Supabase project)
+**Backend (`backend/.env`):**
+- `DATABASE_URL=sqlite+aiosqlite:///./finbridge.db`
+- `LLM_PROVIDER=ollama` (or `gemini`)
+- `GEMINI_API_KEY=your_key`
 
-### Frontend
-```bash
-cd frontend
-npm install
-cp .env.local.example .env.local   # Set NEXT_PUBLIC_API_URL
-npm run dev                         # → http://localhost:3000
-```
-
-### Backend
+## 8. Database Setup
+The backend runs zero-setup SQLite by default for development. 
 ```bash
 cd backend
 python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
-
+.venv\Scripts\activate  # Windows
 pip install -r requirements.txt
-cp .env.example .env               # Set DATABASE_URL and APP_SECRET_KEY
-uvicorn app.main:app --reload      # → http://localhost:8000
+pytest  # Automatically creates and tests the DB schema
 ```
 
-### Verify
-
+## 9. Frontend Setup
 ```bash
-# Health check
-curl http://localhost:8000/health
-# Expected: {"status":"ok","service":"finbridge-api"}
-
-# API docs
-open http://localhost:8000/docs
+cd frontend
+npm install
+npm run dev
 ```
-## Documentation
 
-- [Architecture](docs/architecture.md) — System design, data flow, module map
-- [API Overview](docs/api-overview.md) — All endpoints, request/response shapes
-- [Development Plan](docs/development-plan.md) — 48-hour phased roadmap
+## 10. Backend Setup
+```bash
+cd backend
+.venv\Scripts\activate
+uvicorn app.main:app --reload
+```
+Check health at `http://localhost:8000/health`.
 
----
+## 11. API Overview
+View the auto-generated Swagger UI at `http://localhost:8000/docs` or read the detailed Markdown export in [`docs/api.md`](docs/api.md).
 
+## 12. Demo Credentials
+If testing via Postman without the frontend, you can bypass Firebase by mocking the `verify_firebase_token` dependency or generating a test token in the Firebase console. In the UI, use any valid Google account to Sign In. 
+*Demo Business:* "Shree Digital Solutions"
+
+## 13. Demo Workflow
+Please see [`docs/demo-script.md`](docs/demo-script.md) for the exact 12-step presentation flow covering registration, transaction upload, analytics, fraud detection, trust scoring, loan simulation, scheme matching, and AI coaching.
+
+## 14. Limitations
+- CSV ingestion assumes standard column names (Date, Description, Amount, Type). In production, this would integrate with the Account Aggregator (AA) framework.
+- The Isolation Forest model is untrained and uses synthetic rules for the prototype. It requires real banking datasets to tune its anomaly thresholds.
+
+## 15. Future Scope
+- **Account Aggregator Integration:** Pull live bank statements securely via consent (Sahamati).
+- **Dynamic Interest Pricing:** Connect the Trust Score directly to a live risk-pricing curve.
+- **Multi-lingual AI Coach:** Expand FT-01 to support regional Indian languages via Bhashini API.
+- **Auto-Debit NACH:** Integrate recurring loan EMI deductions directly from the borrower's bank account.

@@ -1,0 +1,3646 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FINBRIDGE API",
+    "description": "FINBRIDGE: AI-Powered Inclusive Micro-Lending & Financial Intelligence Platform. Core: FT-03 Secure Micro-Lending with Alternative Credit Assessment.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health Check",
+        "description": "Liveness probe.\n\nReturns a simple status object confirming the API is running.",
+        "operationId": "health_check_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Check Api V1 Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register user in FINBRIDGE database",
+        "description": "Call this **after** Firebase creates the account on the client. Pass the Firebase ID token + user details. Returns the created user.",
+        "operationId": "register_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Verify Firebase token and return user info",
+        "description": "Pass the Firebase ID token obtained from `getIdToken()`. Returns the user record from the FINBRIDGE database.",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Get authenticated user information",
+        "description": "Returns the currently authenticated user's profile.",
+        "operationId": "get_me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/business/profile": {
+      "get": {
+        "tags": [
+          "business"
+        ],
+        "summary": "Get own business profile",
+        "description": "Returns the authenticated user's business profile.",
+        "operationId": "get_business_profile_api_v1_business_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "business"
+        ],
+        "summary": "Update own business profile",
+        "description": "Partially update the authenticated user's business profile. Only provided fields are updated.",
+        "operationId": "update_business_profile_api_v1_business_profile_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "business"
+        ],
+        "summary": "Create business profile",
+        "description": "Create an MSME business profile for the authenticated user. Each user can have only one profile (409 if already exists).",
+        "operationId": "create_business_profile_api_v1_business_profile_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/loans/apply": {
+      "post": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "Submit a loan application",
+        "description": "Submits a borrowing request for the authenticated MSME business.",
+        "operationId": "apply_for_loan_api_v1_loans_apply_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoanApplicationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoanApplicationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/loans/assess": {
+      "post": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "Assess loan request and produce prototype recommendation",
+        "description": "Evaluates borrowing parameters against the MSME's Financial Trust Score, net cash flow, expense discipline, and fraud telemetry. Returns sustainable loan bounds, reducing-balance EMI, repayment burden, and over-borrowing cautions.",
+        "operationId": "assess_loan_api_v1_loans_assess_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoanAssessmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoanAssessmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/loans/simulate": {
+      "post": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "Dynamic loan repayment simulator",
+        "description": "Simulates loan parameters (amount, tenure, interest rate) in real-time against the business's actual cash flow surplus. Calculates EMI, repayment burden %, and over-borrowing risk.",
+        "operationId": "simulate_repayment_api_v1_loans_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoanSimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoanSimulationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/loans/{application_id}/simulate": {
+      "post": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "Simulate parameters for a specific loan application",
+        "operationId": "simulate_application_api_v1_loans__application_id__simulate_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Application Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoanSimulationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoanSimulationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/loans/applications": {
+      "get": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "List loan applications for current business",
+        "operationId": "list_loan_applications_api_v1_loans_applications_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LoanApplicationResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Loan Applications Api V1 Loans Applications Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/loans/{application_id}": {
+      "get": {
+        "tags": [
+          "loans"
+        ],
+        "summary": "Get loan application by ID",
+        "operationId": "get_loan_application_api_v1_loans__application_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Application Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoanApplicationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/credit/assess": {
+      "post": {
+        "tags": [
+          "credit"
+        ],
+        "summary": "Assess business credit & generate Financial Trust Score",
+        "description": "Executes the FT-03 Alternative Credit Assessment Engine. Extracts deterministic features across stability, cash flow, consistency, expense discipline, repayment capacity, transaction behaviour, and fraud signals. Returns explainable 0-100 Financial Trust Score with metric-backed factors.",
+        "operationId": "assess_credit_score_api_v1_credit_assess_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CreditAssessRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/credit/profile": {
+      "get": {
+        "tags": [
+          "credit"
+        ],
+        "summary": "Get current Financial Trust Score & Credit Profile",
+        "description": "Retrieves the latest Financial Trust Profile for the authenticated business. If no assessment exists yet, automatically performs an initial assessment.",
+        "operationId": "get_credit_profile_api_v1_credit_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditProfileResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/credit/score/{business_id}": {
+      "get": {
+        "tags": [
+          "credit"
+        ],
+        "summary": "Get credit score by business ID",
+        "description": "Fetches latest credit score profile for the given business ID.",
+        "operationId": "get_credit_score_by_id_api_v1_credit_score__business_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/upload": {
+      "post": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "Upload transactions via CSV",
+        "description": "Accept a CSV file with columns: date, description, amount, type, merchant. Validates, normalises, categorises, and bulk-inserts valid rows. Returns a summary of accepted and rejected rows.",
+        "operationId": "upload_transactions_api_v1_transactions_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_transactions_api_v1_transactions_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/transactions/": {
+      "get": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "List transactions for the authenticated business",
+        "operationId": "list_transactions_api_v1_transactions__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "Max rows to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max rows to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Rows to skip",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Rows to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/summary": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Financial health summary",
+        "description": "Returns aggregated financial metrics: monthly revenue, expenses, net cash flow, expense ratio, revenue consistency, and cash-flow volatility. All values computed server-side.",
+        "operationId": "get_financial_summary_api_v1_analytics_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinancialSummary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analytics/cashflow": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Monthly cash-flow trend",
+        "description": "Returns month-by-month credit, debit, and net values.",
+        "operationId": "get_cashflow_api_v1_analytics_cashflow_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashflowResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analytics/expenses": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Expense breakdown by category",
+        "description": "Returns per-category expense totals and percentage share of total spend.",
+        "operationId": "get_expenses_api_v1_analytics_expenses_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpensesResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/analytics/revenue-trend": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Monthly revenue trend",
+        "description": "Returns per-month revenue aggregates for the revenue trend chart.",
+        "operationId": "get_revenue_trend_api_v1_analytics_revenue_trend_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevenueTrendResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/fraud/analyze": {
+      "post": {
+        "tags": [
+          "fraud"
+        ],
+        "summary": "Run fraud/risk analysis on all transactions",
+        "description": "Runs the FT-02 hybrid risk engine (rule engine + Isolation Forest) on every transaction for the authenticated business. Creates or updates a FraudAlert for each transaction. Returns a summary of analyzed and risk-leveled counts.",
+        "operationId": "run_fraud_analysis_api_v1_fraud_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AnalyzeRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": " Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Run Fraud Analysis Api V1 Fraud Analyze Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/fraud/alerts": {
+      "get": {
+        "tags": [
+          "fraud"
+        ],
+        "summary": "List fraud alerts for the authenticated business",
+        "description": "Returns paginated fraud alerts sorted by risk score descending. Optionally filter by risk_level (LOW | MEDIUM | HIGH). Each alert includes the embedded transaction details.",
+        "operationId": "list_fraud_alerts_api_v1_fraud_alerts_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "risk_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter: LOW | MEDIUM | HIGH",
+              "title": "Risk Level"
+            },
+            "description": "Filter: LOW | MEDIUM | HIGH"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FraudAlertListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/fraud/summary": {
+      "get": {
+        "tags": [
+          "fraud"
+        ],
+        "summary": "Aggregate fraud risk summary",
+        "description": "Returns total transaction count, number analyzed, and counts + percentages for LOW / MEDIUM / HIGH risk levels. Powers the stats row on the /fraud-alerts dashboard.",
+        "operationId": "get_fraud_summary_api_v1_fraud_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FraudSummaryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/schemes": {
+      "get": {
+        "tags": [
+          "schemes"
+        ],
+        "summary": "List all active government schemes",
+        "description": "Returns a catalog of all active government schemes.",
+        "operationId": "list_schemes_api_v1_schemes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GovernmentSchemeResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Schemes Api V1 Schemes Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/schemes/matches": {
+      "get": {
+        "tags": [
+          "schemes"
+        ],
+        "summary": "Get scheme matches for the user's business",
+        "description": "Runs the fuzzy matching engine against the user's MSME profile and returns prioritized recommendations.",
+        "operationId": "get_scheme_matches_api_v1_schemes_matches_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MatchingResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/coach/ask": {
+      "post": {
+        "tags": [
+          "coach"
+        ],
+        "summary": "Ask the AI Financial Coach",
+        "description": "Explains actual financial data generated by our deterministic backend. The AI Coach is provided with structured business context: revenue, expenses, net cash flow, expense ratio, trust score, fraud risk, and loan metrics. Supported questions include loan affordability, score drivers, fraud flags, and financial concepts like EMI and repayment burden.",
+        "operationId": "ask_financial_coach_api_v1_coach_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CoachQueryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoachQueryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/coach/context": {
+      "get": {
+        "tags": [
+          "coach"
+        ],
+        "summary": "Get structured financial context for current business",
+        "operationId": "get_coach_context_api_v1_coach_context_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinancialContext"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/coach/education": {
+      "get": {
+        "tags": [
+          "coach"
+        ],
+        "summary": "Get 7 contextual educational financial literacy cards",
+        "description": "Returns curated lesson cards covering Cash Flow, EMI, Interest, Repayment Burden, Revenue Consistency, Expense Management, and Transaction Risk.",
+        "operationId": "get_educational_cards_api_v1_coach_education_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EducationalCardsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/coach/explain-fraud": {
+      "post": {
+        "tags": [
+          "coach"
+        ],
+        "summary": "Explain why a transaction was flagged",
+        "operationId": "explain_fraud_api_v1_coach_explain_fraud_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplainFraudRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplainFraudResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/coach/explain-scheme": {
+      "post": {
+        "tags": [
+          "coach"
+        ],
+        "summary": "Explain government scheme alignment",
+        "operationId": "explain_scheme_api_v1_coach_explain_scheme_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplainSchemeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplainSchemeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalyzeRequest": {
+        "properties": {
+          "transaction_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Ids"
+          }
+        },
+        "type": "object",
+        "title": "AnalyzeRequest",
+        "description": "Optional body for POST /fraud/analyze."
+      },
+      "AuthResponse": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserResponse"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "ok"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user"
+        ],
+        "title": "AuthResponse",
+        "description": "Wrapper response for auth endpoints."
+      },
+      "Body_upload_transactions_api_v1_transactions_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV file to upload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_transactions_api_v1_transactions_upload_post"
+      },
+      "BusinessCreate": {
+        "properties": {
+          "business_name": {
+            "type": "string",
+            "title": "Business Name"
+          },
+          "business_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Type"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "business_age": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Age"
+          },
+          "annual_turnover": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Turnover"
+          }
+        },
+        "type": "object",
+        "required": [
+          "business_name"
+        ],
+        "title": "BusinessCreate",
+        "description": "Body for POST /business/profile."
+      },
+      "BusinessResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "business_name": {
+            "type": "string",
+            "title": "Business Name"
+          },
+          "business_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Type"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "business_age": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Age"
+          },
+          "annual_turnover": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Turnover"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "business_name",
+          "business_type",
+          "location",
+          "business_age",
+          "annual_turnover",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "BusinessResponse",
+        "description": "Response shape for a business profile."
+      },
+      "BusinessUpdate": {
+        "properties": {
+          "business_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Name"
+          },
+          "business_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Type"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "business_age": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Age"
+          },
+          "annual_turnover": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Turnover"
+          }
+        },
+        "type": "object",
+        "title": "BusinessUpdate",
+        "description": "Body for PUT /business/profile \u2014 all fields optional."
+      },
+      "CashflowDataPoint": {
+        "properties": {
+          "month": {
+            "type": "string",
+            "title": "Month"
+          },
+          "revenue": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Revenue"
+          },
+          "expenses": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Expenses"
+          },
+          "net": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month",
+          "revenue",
+          "expenses",
+          "net"
+        ],
+        "title": "CashflowDataPoint",
+        "description": "Monthly credit, debit, and net values for a single month."
+      },
+      "CashflowResponse": {
+        "properties": {
+          "months": {
+            "items": {
+              "$ref": "#/components/schemas/CashflowDataPoint"
+            },
+            "type": "array",
+            "title": "Months"
+          }
+        },
+        "type": "object",
+        "required": [
+          "months"
+        ],
+        "title": "CashflowResponse"
+      },
+      "CoachMessage": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "'user' | 'assistant' | 'system'"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Message text content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "CoachMessage",
+        "description": "Single message in a conversational coaching thread."
+      },
+      "CoachQueryRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 2,
+            "title": "Question",
+            "description": "User question or query"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/CoachMessage"
+            },
+            "type": "array",
+            "title": "History",
+            "description": "Recent conversation turns"
+          },
+          "context_override": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FinancialContext"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional manual context override for simulation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "CoachQueryRequest",
+        "description": "Payload for asking the AI Financial Coach a question."
+      },
+      "CoachQueryResponse": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "context_used": {
+            "$ref": "#/components/schemas/FinancialContext"
+          },
+          "suggested_questions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Suggested Questions"
+          },
+          "relevant_topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relevant Topic"
+          },
+          "provider_used": {
+            "type": "string",
+            "title": "Provider Used",
+            "description": "Provider used: ollama | fallback | etc.",
+            "default": "fallback"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "Based on the available prototype data. The FINBRIDGE AI Coach provides educational and financial guidance for demonstration. It does not guarantee credit approval, disburse loans, or issue official underwriting sanctions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer",
+          "context_used"
+        ],
+        "title": "CoachQueryResponse",
+        "description": "Explainable response returned by the AI Financial Coach."
+      },
+      "CreditAssessRequest": {
+        "properties": {
+          "recalculate_fraud": {
+            "type": "boolean",
+            "title": "Recalculate Fraud",
+            "description": "Optionally run fraud analysis before assessing credit score.",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "CreditAssessRequest",
+        "description": "Optional request payload for manual triggering."
+      },
+      "CreditComponentScores": {
+        "properties": {
+          "financial_stability": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Financial Stability",
+            "description": "Stability sub-score (25% weight)"
+          },
+          "cash_flow_health": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Cash Flow Health",
+            "description": "Cash flow sub-score (20% weight)"
+          },
+          "revenue_consistency": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Revenue Consistency",
+            "description": "Revenue consistency sub-score (15% weight)"
+          },
+          "expense_discipline": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Expense Discipline",
+            "description": "Expense discipline sub-score (10% weight)"
+          },
+          "repayment_capacity": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Repayment Capacity",
+            "description": "Repayment capacity sub-score (15% weight)"
+          },
+          "transaction_behavior": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Transaction Behavior",
+            "description": "Transaction behavior sub-score (10% weight)"
+          },
+          "fraud_risk": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Fraud Risk",
+            "description": "Fraud & risk signals sub-score (5% weight)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "financial_stability",
+          "cash_flow_health",
+          "revenue_consistency",
+          "expense_discipline",
+          "repayment_capacity",
+          "transaction_behavior",
+          "fraud_risk"
+        ],
+        "title": "CreditComponentScores",
+        "description": "Sub-scores for the 7 component dimensions (0-100 each)."
+      },
+      "CreditFactor": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "metric_name": {
+            "type": "string",
+            "title": "Metric Name"
+          },
+          "metric_value": {
+            "type": "string",
+            "title": "Metric Value"
+          },
+          "impact": {
+            "type": "string",
+            "title": "Impact"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "metric_name",
+          "metric_value",
+          "impact"
+        ],
+        "title": "CreditFactor",
+        "description": "Explainable factor backed by an actual calculated financial metric."
+      },
+      "CreditMetrics": {
+        "properties": {
+          "avg_monthly_revenue": {
+            "type": "number",
+            "title": "Avg Monthly Revenue",
+            "default": 0.0
+          },
+          "avg_monthly_expense": {
+            "type": "number",
+            "title": "Avg Monthly Expense",
+            "default": 0.0
+          },
+          "net_cash_flow": {
+            "type": "number",
+            "title": "Net Cash Flow",
+            "default": 0.0
+          },
+          "expense_ratio": {
+            "type": "number",
+            "title": "Expense Ratio",
+            "default": 0.0
+          },
+          "revenue_std": {
+            "type": "number",
+            "title": "Revenue Std",
+            "default": 0.0
+          },
+          "cash_flow_volatility": {
+            "type": "number",
+            "title": "Cash Flow Volatility",
+            "default": 0.0
+          },
+          "transaction_frequency": {
+            "type": "number",
+            "title": "Transaction Frequency",
+            "default": 0.0
+          },
+          "avg_transaction_value": {
+            "type": "number",
+            "title": "Avg Transaction Value",
+            "default": 0.0
+          },
+          "revenue_consistency": {
+            "type": "number",
+            "title": "Revenue Consistency",
+            "default": 0.0
+          },
+          "fraud_alert_rate": {
+            "type": "number",
+            "title": "Fraud Alert Rate",
+            "default": 0.0
+          },
+          "repayment_capacity": {
+            "type": "number",
+            "title": "Repayment Capacity",
+            "default": 0.0
+          },
+          "positive_cash_flow_months_ratio": {
+            "type": "number",
+            "title": "Positive Cash Flow Months Ratio",
+            "default": 0.0
+          },
+          "active_months": {
+            "type": "integer",
+            "title": "Active Months",
+            "default": 0
+          },
+          "total_transactions": {
+            "type": "integer",
+            "title": "Total Transactions",
+            "default": 0
+          },
+          "business_age_years": {
+            "type": "number",
+            "title": "Business Age Years",
+            "default": 0.0
+          },
+          "annual_turnover": {
+            "type": "number",
+            "title": "Annual Turnover",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "CreditMetrics",
+        "description": "Deterministic financial telemetry extracted from business records."
+      },
+      "CreditProfileResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "business_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Business Id"
+          },
+          "trust_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Trust Score",
+            "description": "Aggregate trust score 0-100"
+          },
+          "components": {
+            "$ref": "#/components/schemas/CreditComponentScores"
+          },
+          "positive_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Positive Factors"
+          },
+          "negative_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Negative Factors"
+          },
+          "detailed_factors": {
+            "items": {
+              "$ref": "#/components/schemas/CreditFactor"
+            },
+            "type": "array",
+            "title": "Detailed Factors",
+            "default": []
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/CreditMetrics"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "FINBRIDGE Hackathon Prototype Financial Trust Score. Alternative financial-behavior score for demonstration. Not a regulated credit bureau score or guaranteed lending approval."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "business_id",
+          "trust_score",
+          "components",
+          "positive_factors",
+          "negative_factors",
+          "metrics",
+          "created_at"
+        ],
+        "title": "CreditProfileResponse",
+        "description": "Standard response model for FINBRIDGE Financial Trust Score.\nMatches example schema in FT-03 specification."
+      },
+      "EducationalCard": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "detailed_explanation": {
+            "type": "string",
+            "title": "Detailed Explanation"
+          },
+          "practical_tip": {
+            "type": "string",
+            "title": "Practical Tip"
+          },
+          "example_formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Example Formula"
+          },
+          "sample_question": {
+            "type": "string",
+            "title": "Sample Question"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "topic",
+          "title",
+          "summary",
+          "detailed_explanation",
+          "practical_tip",
+          "sample_question"
+        ],
+        "title": "EducationalCard",
+        "description": "Contextual educational lesson card for financial literacy."
+      },
+      "EducationalCardsResponse": {
+        "properties": {
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/EducationalCard"
+            },
+            "type": "array",
+            "title": "Cards"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cards"
+        ],
+        "title": "EducationalCardsResponse"
+      },
+      "ExpenseCategory": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "total": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total"
+          },
+          "percentage": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Percentage"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "total",
+          "percentage",
+          "transaction_count"
+        ],
+        "title": "ExpenseCategory",
+        "description": "Expense breakdown per category."
+      },
+      "ExpensesResponse": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/ExpenseCategory"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "total_expenses": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Expenses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "categories",
+          "total_expenses"
+        ],
+        "title": "ExpensesResponse"
+      },
+      "ExplainFraudRequest": {
+        "properties": {
+          "transaction_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Id"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount",
+            "default": 0.0
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "merchant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchant"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level",
+            "default": "MEDIUM"
+          },
+          "risk_score": {
+            "type": "integer",
+            "title": "Risk Score",
+            "default": 50
+          },
+          "detected_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Detected Reasons"
+          }
+        },
+        "type": "object",
+        "title": "ExplainFraudRequest"
+      },
+      "ExplainFraudResponse": {
+        "properties": {
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "explanation",
+          "recommendation",
+          "risk_level"
+        ],
+        "title": "ExplainFraudResponse"
+      },
+      "ExplainSchemeRequest": {
+        "properties": {
+          "scheme_name": {
+            "type": "string",
+            "title": "Scheme Name"
+          },
+          "scheme_code": {
+            "type": "string",
+            "title": "Scheme Code"
+          },
+          "match_score": {
+            "type": "integer",
+            "title": "Match Score",
+            "default": 75
+          },
+          "benefits": {
+            "type": "string",
+            "title": "Benefits",
+            "default": ""
+          },
+          "eligibility_notes": {
+            "type": "string",
+            "title": "Eligibility Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "scheme_name",
+          "scheme_code"
+        ],
+        "title": "ExplainSchemeRequest"
+      },
+      "ExplainSchemeResponse": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "why_it_matches": {
+            "type": "string",
+            "title": "Why It Matches"
+          },
+          "next_steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Next Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary",
+          "why_it_matches",
+          "next_steps"
+        ],
+        "title": "ExplainSchemeResponse"
+      },
+      "FinancialContext": {
+        "properties": {
+          "monthly_revenue": {
+            "type": "number",
+            "title": "Monthly Revenue",
+            "description": "Average monthly collections",
+            "default": 0.0
+          },
+          "monthly_expenses": {
+            "type": "number",
+            "title": "Monthly Expenses",
+            "description": "Average monthly business outlays",
+            "default": 0.0
+          },
+          "net_cash_flow": {
+            "type": "number",
+            "title": "Net Cash Flow",
+            "description": "Net monthly cash surplus/deficit",
+            "default": 0.0
+          },
+          "expense_ratio": {
+            "type": "number",
+            "title": "Expense Ratio",
+            "description": "Expenses / Revenue ratio",
+            "default": 0.0
+          },
+          "trust_score": {
+            "type": "integer",
+            "title": "Trust Score",
+            "description": "Financial Trust Score (0-100)",
+            "default": 50
+          },
+          "fraud_risk": {
+            "type": "string",
+            "title": "Fraud Risk",
+            "description": "Risk tier: LOW | MEDIUM | HIGH",
+            "default": "LOW"
+          },
+          "requested_loan": {
+            "type": "number",
+            "title": "Requested Loan",
+            "description": "Latest requested loan amount",
+            "default": 0.0
+          },
+          "estimated_emi": {
+            "type": "number",
+            "title": "Estimated Emi",
+            "description": "Calculated monthly installment",
+            "default": 0.0
+          },
+          "projected_surplus": {
+            "type": "number",
+            "title": "Projected Surplus",
+            "description": "Net cash flow minus EMI",
+            "default": 0.0
+          },
+          "repayment_burden_pct": {
+            "type": "number",
+            "title": "Repayment Burden Pct",
+            "description": "EMI / Net Cash Flow (%)",
+            "default": 0.0
+          },
+          "active_months": {
+            "type": "integer",
+            "title": "Active Months",
+            "description": "Months of verifiable records",
+            "default": 1
+          },
+          "business_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Name",
+            "description": "MSME business name"
+          },
+          "business_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Type",
+            "description": "Category / Sector"
+          }
+        },
+        "type": "object",
+        "title": "FinancialContext",
+        "description": "Structured financial context passed to the AI Coach.\nExtracted deterministically from backend analytics, credit, and loan engines.\nThe LLM never calculates these metrics itself."
+      },
+      "FinancialSummary": {
+        "properties": {
+          "monthly_revenue": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Monthly Revenue"
+          },
+          "monthly_expenses": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Monthly Expenses"
+          },
+          "net_cash_flow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Cash Flow"
+          },
+          "expense_ratio": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Expense Ratio"
+          },
+          "average_transaction_value": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Average Transaction Value"
+          },
+          "revenue_consistency": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Revenue Consistency"
+          },
+          "cash_flow_volatility": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Cash Flow Volatility"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          },
+          "total_revenue": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Revenue"
+          },
+          "total_expenses": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Expenses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "monthly_revenue",
+          "monthly_expenses",
+          "net_cash_flow",
+          "expense_ratio",
+          "average_transaction_value",
+          "revenue_consistency",
+          "cash_flow_volatility",
+          "transaction_count",
+          "total_revenue",
+          "total_expenses"
+        ],
+        "title": "FinancialSummary",
+        "description": "Aggregated financial health snapshot for a business.\nAll monetary values are in INR."
+      },
+      "FraudAlertListResponse": {
+        "properties": {
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/FraudAlertResponse"
+            },
+            "type": "array",
+            "title": "Alerts"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "alerts",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "FraudAlertListResponse",
+        "description": "Paginated list of fraud alerts."
+      },
+      "FraudAlertResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "business_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Business Id"
+          },
+          "risk_score": {
+            "type": "integer",
+            "title": "Risk Score"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "detected_reasons": {
+            "items": {
+              "$ref": "#/components/schemas/RuleResult"
+            },
+            "type": "array",
+            "title": "Detected Reasons"
+          },
+          "model_type": {
+            "type": "string",
+            "title": "Model Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "transaction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TransactionSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "transaction_id",
+          "business_id",
+          "risk_score",
+          "risk_level",
+          "detected_reasons",
+          "model_type",
+          "status",
+          "created_at"
+        ],
+        "title": "FraudAlertResponse",
+        "description": "Single fraud alert row returned from the API."
+      },
+      "FraudSummaryResponse": {
+        "properties": {
+          "total_transactions": {
+            "type": "integer",
+            "title": "Total Transactions"
+          },
+          "analyzed_transactions": {
+            "type": "integer",
+            "title": "Analyzed Transactions"
+          },
+          "low_risk": {
+            "$ref": "#/components/schemas/RiskLevelCount"
+          },
+          "medium_risk": {
+            "$ref": "#/components/schemas/RiskLevelCount"
+          },
+          "high_risk": {
+            "$ref": "#/components/schemas/RiskLevelCount"
+          },
+          "open_alerts": {
+            "type": "integer",
+            "title": "Open Alerts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_transactions",
+          "analyzed_transactions",
+          "low_risk",
+          "medium_risk",
+          "high_risk",
+          "open_alerts"
+        ],
+        "title": "FraudSummaryResponse",
+        "description": "Aggregate stats for the /fraud/summary endpoint.\nConsumed by the frontend stats row."
+      },
+      "GovernmentSchemeResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "business_type": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Business Type"
+          },
+          "minimum_turnover": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Turnover"
+          },
+          "maximum_turnover": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum Turnover"
+          },
+          "eligible_locations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Eligible Locations"
+          },
+          "eligibility_rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Eligibility Rules"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "business_type",
+          "minimum_turnover",
+          "maximum_turnover",
+          "eligible_locations",
+          "eligibility_rules",
+          "source_url",
+          "verification_status",
+          "is_active"
+        ],
+        "title": "GovernmentSchemeResponse",
+        "description": "Schema for a single government scheme."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoanApplicationCreate": {
+        "properties": {
+          "requested_amount": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Requested Amount",
+            "description": "Requested principal amount in INR (> 0)"
+          },
+          "tenure_months": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Tenure Months",
+            "description": "Repayment tenure in months (1 to 60)"
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Purpose",
+            "description": "Business borrowing purpose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requested_amount",
+          "tenure_months",
+          "purpose"
+        ],
+        "title": "LoanApplicationCreate",
+        "description": "Payload for submitting a new loan application."
+      },
+      "LoanApplicationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "business_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Business Id"
+          },
+          "requested_amount": {
+            "type": "number",
+            "title": "Requested Amount"
+          },
+          "tenure_months": {
+            "type": "integer",
+            "title": "Tenure Months"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "offers": {
+            "items": {
+              "$ref": "#/components/schemas/LoanOfferResponse"
+            },
+            "type": "array",
+            "title": "Offers",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "business_id",
+          "requested_amount",
+          "tenure_months",
+          "purpose",
+          "status",
+          "created_at"
+        ],
+        "title": "LoanApplicationResponse",
+        "description": "Loan application with optional attached offers."
+      },
+      "LoanAssessmentRequest": {
+        "properties": {
+          "application_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Id",
+            "description": "Existing LoanApplication ID to evaluate"
+          },
+          "requested_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Amount",
+            "description": "Optional override for requested amount"
+          },
+          "tenure_months": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 60.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenure Months",
+            "description": "Optional override for tenure"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose",
+            "description": "Optional borrowing purpose"
+          }
+        },
+        "type": "object",
+        "title": "LoanAssessmentRequest",
+        "description": "Request payload for assessing a loan application or standalone scenario."
+      },
+      "LoanAssessmentResponse": {
+        "properties": {
+          "application_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Application Id"
+          },
+          "offer_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offer Id"
+          },
+          "recommended_min_amount": {
+            "type": "number",
+            "title": "Recommended Min Amount"
+          },
+          "recommended_max_amount": {
+            "type": "number",
+            "title": "Recommended Max Amount"
+          },
+          "requested_amount": {
+            "type": "number",
+            "title": "Requested Amount"
+          },
+          "tenure_months": {
+            "type": "integer",
+            "title": "Tenure Months"
+          },
+          "annual_interest_rate": {
+            "type": "number",
+            "title": "Annual Interest Rate"
+          },
+          "estimated_emi": {
+            "type": "number",
+            "title": "Estimated Emi"
+          },
+          "estimated_interest": {
+            "type": "number",
+            "title": "Estimated Interest"
+          },
+          "total_repayment": {
+            "type": "number",
+            "title": "Total Repayment"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "current_monthly_cash_flow": {
+            "type": "number",
+            "title": "Current Monthly Cash Flow"
+          },
+          "post_loan_projected_surplus": {
+            "type": "number",
+            "title": "Post Loan Projected Surplus"
+          },
+          "repayment_burden_pct": {
+            "type": "number",
+            "title": "Repayment Burden Pct"
+          },
+          "is_overborrowing_risk": {
+            "type": "boolean",
+            "title": "Is Overborrowing Risk"
+          },
+          "prototype_recommendation": {
+            "type": "string",
+            "title": "Prototype Recommendation"
+          },
+          "supporting_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Supporting Factors"
+          },
+          "caution_factors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caution Factors"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "FINBRIDGE Prototype Underwriting Recommendation. Alternative credit assessment for demonstration purposes. Not a regulated lending sanction or guarantee of NBFC/Bank disbursement."
+          }
+        },
+        "type": "object",
+        "required": [
+          "recommended_min_amount",
+          "recommended_max_amount",
+          "requested_amount",
+          "tenure_months",
+          "annual_interest_rate",
+          "estimated_emi",
+          "estimated_interest",
+          "total_repayment",
+          "risk_level",
+          "current_monthly_cash_flow",
+          "post_loan_projected_surplus",
+          "repayment_burden_pct",
+          "is_overborrowing_risk",
+          "prototype_recommendation",
+          "supporting_factors",
+          "caution_factors"
+        ],
+        "title": "LoanAssessmentResponse",
+        "description": "Explainable prototype loan assessment response.\nNever returns generic 'Approved' \u2014 provides explainable prototype recommendations."
+      },
+      "LoanOfferResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "loan_application_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Loan Application Id"
+          },
+          "recommended_min_amount": {
+            "type": "number",
+            "title": "Recommended Min Amount"
+          },
+          "recommended_max_amount": {
+            "type": "number",
+            "title": "Recommended Max Amount"
+          },
+          "estimated_emi": {
+            "type": "number",
+            "title": "Estimated Emi"
+          },
+          "estimated_interest": {
+            "type": "number",
+            "title": "Estimated Interest"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "explanation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Explanation"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "loan_application_id",
+          "recommended_min_amount",
+          "recommended_max_amount",
+          "estimated_emi",
+          "estimated_interest",
+          "risk_level",
+          "explanation",
+          "created_at"
+        ],
+        "title": "LoanOfferResponse",
+        "description": "Persisted prototype loan recommendation offer."
+      },
+      "LoanSimulationRequest": {
+        "properties": {
+          "loan_amount": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Loan Amount",
+            "description": "Simulated loan principal in INR"
+          },
+          "tenure_months": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Tenure Months",
+            "description": "Simulated repayment tenure in months"
+          },
+          "annual_interest_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Interest Rate",
+            "description": "Optional custom annual interest rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loan_amount",
+          "tenure_months"
+        ],
+        "title": "LoanSimulationRequest",
+        "description": "Request payload for real-time dynamic loan simulation."
+      },
+      "LoanSimulationResponse": {
+        "properties": {
+          "loan_amount": {
+            "type": "number",
+            "title": "Loan Amount"
+          },
+          "tenure_months": {
+            "type": "integer",
+            "title": "Tenure Months"
+          },
+          "annual_interest_rate": {
+            "type": "number",
+            "title": "Annual Interest Rate"
+          },
+          "emi": {
+            "type": "number",
+            "title": "Emi"
+          },
+          "total_interest": {
+            "type": "number",
+            "title": "Total Interest"
+          },
+          "total_repayment": {
+            "type": "number",
+            "title": "Total Repayment"
+          },
+          "current_cash_flow": {
+            "type": "number",
+            "title": "Current Cash Flow"
+          },
+          "post_loan_cash_flow": {
+            "type": "number",
+            "title": "Post Loan Cash Flow"
+          },
+          "repayment_burden_pct": {
+            "type": "number",
+            "title": "Repayment Burden Pct"
+          },
+          "is_overborrowing_risk": {
+            "type": "boolean",
+            "title": "Is Overborrowing Risk"
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level"
+          },
+          "cautions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Cautions",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "loan_amount",
+          "tenure_months",
+          "annual_interest_rate",
+          "emi",
+          "total_interest",
+          "total_repayment",
+          "current_cash_flow",
+          "post_loan_cash_flow",
+          "repayment_burden_pct",
+          "is_overborrowing_risk",
+          "risk_level"
+        ],
+        "title": "LoanSimulationResponse",
+        "description": "Dynamic response for loan simulator sliders and widgets."
+      },
+      "LoginRequest": {
+        "properties": {
+          "firebase_id_token": {
+            "type": "string",
+            "title": "Firebase Id Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "firebase_id_token"
+        ],
+        "title": "LoginRequest",
+        "description": "Body for POST /auth/login.\nThe Firebase ID token is all we need \u2014 Firebase already authenticated the user."
+      },
+      "MatchingResult": {
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Business Id"
+          },
+          "total_matches": {
+            "type": "integer",
+            "title": "Total Matches"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/SchemeMatchResponse"
+            },
+            "type": "array",
+            "title": "Matches"
+          }
+        },
+        "type": "object",
+        "required": [
+          "business_id",
+          "total_matches",
+          "matches"
+        ],
+        "title": "MatchingResult",
+        "description": "Wrapper for the list of matched schemes."
+      },
+      "RegisterRequest": {
+        "properties": {
+          "firebase_id_token": {
+            "type": "string",
+            "title": "Firebase Id Token"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "firebase_id_token",
+          "name",
+          "email"
+        ],
+        "title": "RegisterRequest",
+        "description": "Body for POST /auth/register.\nFirebase has already created the account \u2014 this registers the user in our DB."
+      },
+      "RevenueTrendPoint": {
+        "properties": {
+          "month": {
+            "type": "string",
+            "title": "Month"
+          },
+          "revenue": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Revenue"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "month",
+          "revenue",
+          "transaction_count"
+        ],
+        "title": "RevenueTrendPoint",
+        "description": "Monthly revenue for trend chart."
+      },
+      "RevenueTrendResponse": {
+        "properties": {
+          "trend": {
+            "items": {
+              "$ref": "#/components/schemas/RevenueTrendPoint"
+            },
+            "type": "array",
+            "title": "Trend"
+          },
+          "average_monthly_revenue": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Average Monthly Revenue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trend",
+          "average_monthly_revenue"
+        ],
+        "title": "RevenueTrendResponse"
+      },
+      "RiskLevelCount": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "percentage": {
+            "type": "number",
+            "title": "Percentage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "percentage"
+        ],
+        "title": "RiskLevelCount"
+      },
+      "RowError": {
+        "properties": {
+          "row": {
+            "type": "integer",
+            "title": "Row"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "row",
+          "reason"
+        ],
+        "title": "RowError",
+        "description": "Details of a single rejected row during CSV upload."
+      },
+      "RuleResult": {
+        "properties": {
+          "rule_name": {
+            "type": "string",
+            "title": "Rule Name"
+          },
+          "triggered": {
+            "type": "boolean",
+            "title": "Triggered"
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_name",
+          "triggered",
+          "severity",
+          "reason"
+        ],
+        "title": "RuleResult",
+        "description": "Output of a single deterministic rule check."
+      },
+      "SchemeMatchResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "business_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Business Id"
+          },
+          "scheme_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scheme Id"
+          },
+          "match_percentage": {
+            "type": "integer",
+            "title": "Match Percentage"
+          },
+          "matched_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matched Conditions"
+          },
+          "unmet_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unmet Conditions"
+          },
+          "scheme": {
+            "$ref": "#/components/schemas/GovernmentSchemeResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "business_id",
+          "scheme_id",
+          "match_percentage",
+          "matched_conditions",
+          "unmet_conditions",
+          "scheme"
+        ],
+        "title": "SchemeMatchResponse",
+        "description": "Schema for a fuzzy match result."
+      },
+      "TransactionListResponse": {
+        "properties": {
+          "transactions": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionResponse"
+            },
+            "type": "array",
+            "title": "Transactions"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transactions",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "TransactionListResponse",
+        "description": "Paginated list of transactions."
+      },
+      "TransactionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "business_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Business Id"
+          },
+          "transaction_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Transaction Date"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount"
+          },
+          "transaction_type": {
+            "type": "string",
+            "title": "Transaction Type"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "merchant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchant"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "business_id",
+          "transaction_date",
+          "amount",
+          "transaction_type",
+          "category",
+          "merchant",
+          "description",
+          "timestamp",
+          "created_at"
+        ],
+        "title": "TransactionResponse",
+        "description": "Single transaction record returned from the API."
+      },
+      "TransactionSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "transaction_date": {
+            "type": "string",
+            "title": "Transaction Date"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Amount"
+          },
+          "transaction_type": {
+            "type": "string",
+            "title": "Transaction Type"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "merchant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchant"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "transaction_date",
+          "amount",
+          "transaction_type",
+          "category",
+          "merchant",
+          "description"
+        ],
+        "title": "TransactionSummary",
+        "description": "Minimal transaction info shown on fraud alert cards."
+      },
+      "UploadSummary": {
+        "properties": {
+          "total_rows": {
+            "type": "integer",
+            "title": "Total Rows"
+          },
+          "accepted_rows": {
+            "type": "integer",
+            "title": "Accepted Rows"
+          },
+          "rejected_rows": {
+            "type": "integer",
+            "title": "Rejected Rows"
+          },
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/RowError"
+            },
+            "type": "array",
+            "title": "Errors"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_rows",
+          "accepted_rows",
+          "rejected_rows",
+          "errors",
+          "message"
+        ],
+        "title": "UploadSummary",
+        "description": "Returned after POST /transactions/upload."
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "firebase_uid": {
+            "type": "string",
+            "title": "Firebase Uid"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "has_business": {
+            "type": "boolean",
+            "title": "Has Business",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "email",
+          "firebase_uid",
+          "is_active",
+          "created_at"
+        ],
+        "title": "UserResponse",
+        "description": "Response shape for an authenticated user."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
