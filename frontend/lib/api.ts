@@ -630,3 +630,49 @@ export async function getLoanApplication(
   );
 }
 
+
+// ============================================================================
+// FT-04 GOVERNMENT SCHEMES (PART 07)
+// ============================================================================
+
+export interface GovernmentSchemeResponse {
+  id: string;
+  name: string;
+  description: string;
+  business_type: string[];
+  minimum_turnover: number | null;
+  maximum_turnover: number | null;
+  eligible_locations: string[];
+  eligibility_rules: string[];
+  source_url: string;
+  verification_status: string;
+  is_active: boolean;
+}
+
+export interface SchemeMatchResponse {
+  id: string;
+  business_id: string;
+  scheme_id: string;
+  match_percentage: number;
+  matched_conditions: string[];
+  unmet_conditions: string[];
+  scheme: GovernmentSchemeResponse;
+}
+
+export interface MatchingResult {
+  business_id: string;
+  total_matches: number;
+  matches: SchemeMatchResponse[];
+}
+
+export async function getSchemes(
+  idToken: string
+): Promise<GovernmentSchemeResponse[]> {
+  return request<GovernmentSchemeResponse[]>("/api/v1/schemes", {}, idToken);
+}
+
+export async function getSchemeMatches(
+  idToken: string
+): Promise<MatchingResult> {
+  return request<MatchingResult>("/api/v1/schemes/matches", {}, idToken);
+}

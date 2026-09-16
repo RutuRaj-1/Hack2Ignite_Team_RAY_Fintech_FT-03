@@ -182,6 +182,12 @@ export default function DashboardPage() {
               >
                 Fraud Engine
               </Link>
+              <Link
+                href="/schemes"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-amber-400 hover:text-white hover:bg-gray-800 transition-colors"
+              >
+                Govt Schemes
+              </Link>
             </nav>
 
             <div className="text-right hidden sm:block">
@@ -372,21 +378,25 @@ export default function DashboardPage() {
             </div>
 
             {/* FT-04: Government Schemes */}
-            <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-6 relative group hover:border-gray-700 transition-colors">
+            <Link
+              href="/schemes"
+              className="bg-[#161B22] border-2 border-amber-500/40 rounded-2xl p-6 relative group hover:border-amber-500/70 transition-colors block"
+            >
               <div className="w-10 h-10 rounded-xl bg-amber-600/10 border border-amber-500/20 flex items-center justify-center mb-4">
                 <FileCheck2 className="w-5 h-5 text-amber-400" />
               </div>
               <div className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 mb-2">
-                Supporting • FT-04
+                Active • FT-04
               </div>
               <h4 className="text-lg font-semibold text-white">Govt Scheme Discovery</h4>
               <p className="text-xs text-gray-400 mt-2 leading-relaxed">
                 Automated matching against PMEGP, CGTMSE, MUDRA loans, and state-level subsidy schemes.
               </p>
               <div className="mt-5 pt-4 border-t border-gray-800 flex items-center justify-between">
-                <span className="text-xs text-gray-400">Architecture Ready</span>
+                <span className="text-xs text-amber-400 font-medium">Find Schemes →</span>
+                <span className="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-1 rounded">Part 07 Live</span>
               </div>
-            </div>
+            </Link>
 
             {/* FT-05: Expense Analytics — LIVE in Part 03 */}
             <Link
@@ -416,9 +426,9 @@ export default function DashboardPage() {
                   <TrendingUp className="w-4 h-4" />
                   <span>Hackathon State</span>
                 </div>
-                <h4 className="text-base font-bold text-white">Part 04 Complete</h4>
+                <h4 className="text-base font-bold text-white">Part 07 Complete</h4>
                 <p className="text-xs text-gray-400 mt-2">
-                  Hybrid rule & ML engine deployed. Anomaly detection via Isolation Forest and 6 rule signals active.
+                  FT-04 Government Scheme matching active. Provides fuzzy matching against official Indian subsidies based on business profile.
                 </p>
               </div>
               <div className="text-[11px] text-gray-500 mt-4">

@@ -67,3 +67,8 @@ class Business(UUIDMixin, TimestampMixin, Base):
     loan_applications: Mapped[list["LoanApplication"]] = relationship(  # noqa: F821
         "LoanApplication", back_populates="business", cascade="all, delete-orphan"
     )
+
+    # One-to-many: a business has many scheme matches
+    scheme_matches: Mapped[list["SchemeMatch"]] = relationship(  # noqa: F821
+        "SchemeMatch", back_populates="business", cascade="all, delete-orphan"
+    )

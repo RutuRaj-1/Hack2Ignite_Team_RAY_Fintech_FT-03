@@ -9,15 +9,18 @@ import {
   assessLoan,
   getCreditProfile,
   getLoanApplications,
+  getSchemeMatches,
   type CreditProfileResponse,
   type LoanApplicationResponse,
   type LoanAssessmentResponse,
+  type SchemeMatchResponse,
 } from "@/lib/api";
 import {
   ShieldCheck,
   CreditCard,
   Sliders,
   TrendingUp,
+  Landmark,
   TrendingDown,
   AlertCircle,
   AlertTriangle,
@@ -64,6 +67,7 @@ export default function LoanPage() {
   const [creditProfile, setCreditProfile] = useState<CreditProfileResponse | null>(null);
   const [applications, setApplications] = useState<LoanApplicationResponse[]>([]);
   const [assessment, setAssessment] = useState<LoanAssessmentResponse | null>(null);
+  const [topScheme, setTopScheme] = useState<SchemeMatchResponse | null>(null);
 
   const [requestedAmount, setRequestedAmount] = useState<number>(75000);
   const [tenureMonths, setTenureMonths] = useState<number>(12);
@@ -81,13 +85,21 @@ export default function LoanPage() {
     setLoading(true);
     setError(null);
     try {
-      const [profileRes, appsRes] = await Promise.all([
+      const [profileRes, appsRes, schemeRes] = await Promise.all([
         getCreditProfile(token).catch(() => null),
         getLoanApplications(token).catch(() => []),
+        getSchemeMatches(token).catch(() => null),
       ]);
 
       if (profileRes) setCreditProfile(profileRes);
       if (appsRes) setApplications(appsRes);
+      if (schemeRes && schemeRes.matches.length > 0) {
+        // Only show if match percentage is high enough
+        const best = schemeRes.matches[0];
+        if (best.match_percentage >= 50) {
+          setTopScheme(best);
+        }
+      }
 
       // Run initial assessment with current parameters
       const assessRes = await assessLoan(
@@ -649,6 +661,41 @@ export default function LoanPage() {
                     )}
                   </div>
                 </div>
+
+                {/* FT-04 Integration: Potential Financing Support */}
+                {topScheme && (
+                  <div className="p-4 rounded-2xl border border-amber-500/20 bg-amber-950/10 space-y-3 relative overflow-hidden">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mt-0.5 shrink-0">
+                        <Landmark className="h-4 w-4" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">
+                            Potential Financing Support (FT-04)
+                          </span>
+                          <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-mono">
+                            {topScheme.match_percentage}% Match
+                          </span>
+                        </div>
+                        <h4 className="text-sm font-bold text-slate-200">
+                          {topScheme.scheme.name}
+                        </h4>
+                        <p className="text-xs text-slate-400 leading-relaxed max-w-xl">
+                          Consider checking this official subsidy/loan scheme to reduce your commercial borrowing burden. 
+                        </p>
+                        <div className="pt-2">
+                          <Link 
+                            href="/schemes"
+                            className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1"
+                          >
+                            View Eligibility Details <ChevronRight className="h-3 w-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
