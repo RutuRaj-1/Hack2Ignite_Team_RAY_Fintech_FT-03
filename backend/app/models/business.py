@@ -11,6 +11,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 from app.models.base import TimestampMixin, UUIDMixin
+from decimal import Decimal
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.transaction import Transaction
 
 
 class Business(UUIDMixin, TimestampMixin, Base):
@@ -32,7 +38,7 @@ class Business(UUIDMixin, TimestampMixin, Base):
     business_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
     location: Mapped[str | None] = mapped_column(String(255), nullable=True)
     business_age: Mapped[int | None] = mapped_column(Integer, nullable=True)   # years in operation
-    annual_turnover: Mapped[float | None] = mapped_column(Numeric(15, 2), nullable=True)
+    annual_turnover: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
 
     # Back-reference to owner
     owner: Mapped["User"] = relationship(  # noqa: F821

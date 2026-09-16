@@ -26,6 +26,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 from app.models.base import TimestampMixin, UUIDMixin
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.business import Business
 
 # Valid category values — used for validation and display
 TRANSACTION_CATEGORIES = [

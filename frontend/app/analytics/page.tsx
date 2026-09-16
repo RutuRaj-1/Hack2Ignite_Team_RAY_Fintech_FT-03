@@ -609,7 +609,7 @@ export default function AnalyticsPage() {
                           ))}
                         </Pie>
                         <Tooltip
-                          formatter={(value: number) => formatINR(value)}
+                          formatter={(value: any) => formatINR(Number(value))}
                           contentStyle={{
                             background: "#1C2230",
                             border: "1px solid #374151",
