@@ -139,16 +139,28 @@ export default function DashboardPage() {
             <span className="text-xl font-bold tracking-tight text-white">
               FIN<span className="text-blue-500">BRIDGE</span>
             </span>
-            <span className="ml-2 text-xs bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
-              Part 05 Active
+            <span className="ml-2 text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full font-medium hidden sm:inline-block">
+              Part 06 Active • Micro-Lending
             </span>
           </Link>
 
           <div className="flex items-center gap-3">
             <nav className="hidden sm:flex items-center gap-1">
               <Link
+                href="/loan"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 shadow-md transition-colors"
+              >
+                Loan Hub
+              </Link>
+              <Link
+                href="/loan/simulator"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-cyan-400 hover:text-white hover:bg-gray-800 transition-colors"
+              >
+                Simulator
+              </Link>
+              <Link
                 href="/credit-profile"
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
               >
                 Trust Score
               </Link>

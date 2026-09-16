@@ -483,3 +483,150 @@ export async function getCreditProfile(
     idToken
   );
 }
+
+// ============================================================================
+// FT-03 LOAN ASSESSMENT & REPAYMENT SIMULATOR (PART 06)
+// ============================================================================
+
+export interface LoanApplicationCreate {
+  requested_amount: number;
+  tenure_months: number;
+  purpose: string;
+}
+
+export interface LoanOfferResponse {
+  id: string;
+  loan_application_id: string;
+  recommended_min_amount: number;
+  recommended_max_amount: number;
+  estimated_emi: number;
+  estimated_interest: number;
+  risk_level: "LOW" | "MEDIUM" | "HIGH";
+  explanation: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface LoanApplicationResponse {
+  id: string;
+  business_id: string;
+  requested_amount: number;
+  tenure_months: number;
+  purpose: string;
+  status: string;
+  created_at: string;
+  offers: LoanOfferResponse[];
+}
+
+export interface LoanAssessmentRequest {
+  application_id?: string;
+  requested_amount?: number;
+  tenure_months?: number;
+  purpose?: string;
+}
+
+export interface LoanAssessmentResponse {
+  application_id?: string | null;
+  offer_id?: string | null;
+  recommended_min_amount: number;
+  recommended_max_amount: number;
+  requested_amount: number;
+  tenure_months: number;
+  annual_interest_rate: number;
+  estimated_emi: number;
+  estimated_interest: number;
+  total_repayment: number;
+  risk_level: "LOW" | "MEDIUM" | "HIGH";
+  current_monthly_cash_flow: number;
+  post_loan_projected_surplus: number;
+  repayment_burden_pct: number;
+  is_overborrowing_risk: boolean;
+  prototype_recommendation: string;
+  supporting_factors: string[];
+  caution_factors: string[];
+  disclaimer: string;
+}
+
+export interface LoanSimulationRequest {
+  loan_amount: number;
+  tenure_months: number;
+  annual_interest_rate?: number;
+}
+
+export interface LoanSimulationResponse {
+  loan_amount: number;
+  tenure_months: number;
+  annual_interest_rate: number;
+  emi: number;
+  total_interest: number;
+  total_repayment: number;
+  current_cash_flow: number;
+  post_loan_cash_flow: number;
+  repayment_burden_pct: number;
+  is_overborrowing_risk: boolean;
+  risk_level: string;
+  cautions: string[];
+}
+
+export async function applyLoan(
+  payload: LoanApplicationCreate,
+  idToken: string
+): Promise<LoanApplicationResponse> {
+  return request<LoanApplicationResponse>(
+    "/api/v1/loans/apply",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    idToken
+  );
+}
+
+export async function assessLoan(
+  payload: LoanAssessmentRequest,
+  idToken: string
+): Promise<LoanAssessmentResponse> {
+  return request<LoanAssessmentResponse>(
+    "/api/v1/loans/assess",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    idToken
+  );
+}
+
+export async function simulateLoan(
+  payload: LoanSimulationRequest,
+  idToken: string
+): Promise<LoanSimulationResponse> {
+  return request<LoanSimulationResponse>(
+    "/api/v1/loans/simulate",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    idToken
+  );
+}
+
+export async function getLoanApplications(
+  idToken: string
+): Promise<LoanApplicationResponse[]> {
+  return request<LoanApplicationResponse[]>(
+    "/api/v1/loans/applications",
+    { method: "GET" },
+    idToken
+  );
+}
+
+export async function getLoanApplication(
+  applicationId: string,
+  idToken: string
+): Promise<LoanApplicationResponse> {
+  return request<LoanApplicationResponse>(
+    `/api/v1/loans/${applicationId}`,
+    { method: "GET" },
+    idToken
+  );
+}
+

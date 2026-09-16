@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from app.models.transaction import Transaction
     from app.models.fraud_alert import FraudAlert
     from app.models.credit_profile import CreditProfile
+    from app.models.loan import LoanApplication
 
 
 class Business(UUIDMixin, TimestampMixin, Base):
@@ -60,4 +61,9 @@ class Business(UUIDMixin, TimestampMixin, Base):
     # One-to-many: a business has many credit profiles
     credit_profiles: Mapped[list["CreditProfile"]] = relationship(  # noqa: F821
         "CreditProfile", back_populates="business", cascade="all, delete-orphan"
+    )
+
+    # One-to-many: a business has many loan applications
+    loan_applications: Mapped[list["LoanApplication"]] = relationship(  # noqa: F821
+        "LoanApplication", back_populates="business", cascade="all, delete-orphan"
     )
