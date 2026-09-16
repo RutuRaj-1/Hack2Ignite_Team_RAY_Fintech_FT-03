@@ -239,6 +239,13 @@ export default function LoanPage() {
               <Sliders className="h-3.5 w-3.5 text-indigo-400" />
               <span>Open Loan Simulator</span>
             </Link>
+            <Link
+              href="/financial-coach?q=Can%20I%20afford%20a%20micro%20loan%20for%20my%20business%3F"
+              className="text-xs px-3 py-1.5 rounded-lg border border-purple-500/30 bg-purple-950/40 text-purple-300 hover:bg-purple-900/60 transition flex items-center gap-1.5"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+              <span>Ask AI Coach</span>
+            </Link>
           </div>
         </div>
       </header>
@@ -696,6 +703,23 @@ export default function LoanPage() {
                     </div>
                   </div>
                 )}
+
+                {/* AI Financial Coach Guidance Bar */}
+                <div className="p-4 rounded-2xl border border-purple-500/30 bg-purple-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="h-4 w-4 text-purple-400 shrink-0" />
+                    <span className="text-xs text-slate-300">
+                      Unsure about your monthly EMI burden or surplus impact?
+                    </span>
+                  </div>
+                  <Link
+                    href={`/financial-coach?q=Can%20I%20afford%20a%20₹${assessment.requested_amount}%20loan%20with%20an%20EMI%20of%20₹${Math.round(assessment.estimated_emi)}%3F`}
+                    className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shrink-0 transition flex items-center gap-1 self-start sm:self-center"
+                  >
+                    <span>Ask Coach About Affordability</span>
+                    <ChevronRight className="h-3 w-3" />
+                  </Link>
+                </div>
               </div>
             )}
           </div>

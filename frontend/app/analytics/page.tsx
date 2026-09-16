@@ -287,6 +287,12 @@ export default function AnalyticsPage() {
             >
               Analytics
             </Link>
+            <Link
+              href="/financial-coach?q=How%20can%20I%20improve%20my%20cash%20flow%20and%20expense%20ratio%3F"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-colors"
+            >
+              Ask AI Coach
+            </Link>
           </nav>
         </div>
       </header>

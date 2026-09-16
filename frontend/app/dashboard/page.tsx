@@ -188,6 +188,13 @@ export default function DashboardPage() {
               >
                 Govt Schemes
               </Link>
+              <Link
+                href="/financial-coach"
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-colors flex items-center gap-1"
+              >
+                <Sparkles className="w-3 h-3 text-purple-400" />
+                <span>AI Coach</span>
+              </Link>
             </nav>
 
             <div className="text-right hidden sm:block">
@@ -360,22 +367,26 @@ export default function DashboardPage() {
               </div>
             </Link>
 
-            {/* FT-01: Literacy */}
-            <div className="bg-[#161B22] border border-gray-800 rounded-2xl p-6 relative group hover:border-gray-700 transition-colors">
+            {/* FT-01: AI Financial Coach — LIVE in Part 08 */}
+            <Link
+              href="/financial-coach"
+              className="bg-[#161B22] border-2 border-purple-500/40 rounded-2xl p-6 relative group hover:border-purple-500/70 transition-colors block"
+            >
               <div className="w-10 h-10 rounded-xl bg-purple-600/10 border border-purple-500/20 flex items-center justify-center mb-4">
-                <BookOpen className="w-5 h-5 text-purple-400" />
+                <Sparkles className="w-5 h-5 text-purple-400" />
               </div>
               <div className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 mb-2">
-                Supporting • FT-01
+                Active • FT-01
               </div>
               <h4 className="text-lg font-semibold text-white">AI Financial Coach</h4>
               <p className="text-xs text-gray-400 mt-2 leading-relaxed">
-                Vernacular, interactive guidance in Hindi and regional dialects tailored for small merchant credit building.
+                Deterministic telemetry-grounded coach explaining cash flows, trust score factors, and loan sustainability.
               </p>
               <div className="mt-5 pt-4 border-t border-gray-800 flex items-center justify-between">
-                <span className="text-xs text-gray-400">Architecture Ready</span>
+                <span className="text-xs text-purple-400 font-medium">Chat With Coach →</span>
+                <span className="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-1 rounded">Part 08 Live</span>
               </div>
-            </div>
+            </Link>
 
             {/* FT-04: Government Schemes */}
             <Link
@@ -426,9 +437,9 @@ export default function DashboardPage() {
                   <TrendingUp className="w-4 h-4" />
                   <span>Hackathon State</span>
                 </div>
-                <h4 className="text-base font-bold text-white">Part 07 Complete</h4>
+                <h4 className="text-base font-bold text-white">Part 08 Complete</h4>
                 <p className="text-xs text-gray-400 mt-2">
-                  FT-04 Government Scheme matching active. Provides fuzzy matching against official Indian subsidies based on business profile.
+                  FT-01 AI Financial Coach & Local LLM Ollama abstraction active. Explains deterministic cash flows, trust scores, loan capacity, and literacy modules.
                 </p>
               </div>
               <div className="text-[11px] text-gray-500 mt-4">

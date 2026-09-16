@@ -256,6 +256,13 @@ export default function CreditProfilePage() {
               <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
               <span>Fraud Telemetry</span>
             </Link>
+            <Link
+              href="/financial-coach?q=Why%20is%20my%20financial%20trust%20score%20what%20it%20is%3F"
+              className="text-xs px-3 py-1.5 rounded-lg border border-purple-500/30 bg-purple-950/40 text-purple-300 hover:bg-purple-900/60 transition flex items-center gap-1.5"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-purple-400" />
+              <span>Ask AI Coach</span>
+            </Link>
             <button
               onClick={handleRunAssessment}
               disabled={assessing}
@@ -538,6 +545,28 @@ export default function CreditProfilePage() {
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* AI Coach Interpretation CTA */}
+            <div className="p-4 rounded-2xl border border-purple-500/30 bg-gradient-to-r from-purple-950/40 to-slate-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">Need deeper score insights?</h4>
+                  <p className="text-[11px] text-slate-400">
+                    Ask the AI Financial Coach to analyze your score breakdown and recommend concrete steps to improve it.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/financial-coach?q=Why%20is%20my%20financial%20trust%20score%20what%20it%20is%20and%20how%20can%20I%20improve%20it%3F"
+                className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shrink-0 transition flex items-center gap-1 self-start sm:self-center"
+              >
+                <span>Ask Coach to Explain</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
         )}

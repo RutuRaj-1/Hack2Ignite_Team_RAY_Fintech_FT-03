@@ -676,3 +676,97 @@ export async function getSchemeMatches(
 ): Promise<MatchingResult> {
   return request<MatchingResult>("/api/v1/schemes/matches", {}, idToken);
 }
+
+// ============================================================================
+// FT-01 AI FINANCIAL COACH & LITERACY (PART 08)
+// ============================================================================
+
+export interface FinancialContext {
+  monthly_revenue: number;
+  monthly_expenses: number;
+  net_cash_flow: number;
+  expense_ratio: number;
+  trust_score: number;
+  fraud_risk: string;
+  requested_loan: number;
+  estimated_emi: number;
+  projected_surplus: number;
+  repayment_burden_pct: number;
+  active_months: number;
+  business_name?: string | null;
+  business_type?: string | null;
+}
+
+export interface CoachMessage {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
+export interface CoachQueryRequest {
+  question: string;
+  history?: CoachMessage[];
+  context_override?: FinancialContext | null;
+}
+
+export interface CoachQueryResponse {
+  answer: string;
+  context_used: FinancialContext;
+  suggested_questions: string[];
+  relevant_topic?: string | null;
+  provider_used: string;
+  disclaimer: string;
+}
+
+export interface EducationalCard {
+  id: string;
+  topic: string;
+  title: string;
+  summary: string;
+  detailed_explanation: string;
+  practical_tip: string;
+  example_formula?: string | null;
+  sample_question: string;
+}
+
+export interface EducationalCardsResponse {
+  cards: EducationalCard[];
+}
+
+export async function askCoach(
+  payload: CoachQueryRequest,
+  idToken: string
+): Promise<CoachQueryResponse> {
+  return request<CoachQueryResponse>(
+    "/api/v1/coach/ask",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    idToken
+  );
+}
+
+export async function getCoachContext(
+  idToken: string
+): Promise<FinancialContext> {
+  return request<FinancialContext>("/api/v1/coach/context", {}, idToken);
+}
+
+export async function getEducationalCards(): Promise<EducationalCardsResponse> {
+  return request<EducationalCardsResponse>("/api/v1/coach/education", {});
+}
+
+export async function explainFraudAlert(
+  body: { amount: number; risk_level: string; detected_reasons: string[] },
+  idToken: string
+): Promise<{ explanation: string; recommendation: string; risk_level: string }> {
+  return request<{ explanation: string; recommendation: string; risk_level: string }>(
+    "/api/v1/coach/explain-fraud",
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    },
+    idToken
+  );
+}
+

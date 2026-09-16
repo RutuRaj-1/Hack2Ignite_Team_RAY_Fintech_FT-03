@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../context/AuthContext";
-import { getSchemeMatches, SchemeMatchResponse } from "../../lib/api";
+import { useAuth } from "@/lib/auth-context";
+import { getSchemeMatches, SchemeMatchResponse } from "@/lib/api";
 import {
   Landmark,
   ExternalLink,
@@ -16,21 +16,14 @@ import {
 } from "lucide-react";
 
 export default function GovernmentSchemesPage() {
-  const { user, token, loading: authLoading } = useAuth();
+  const { firebaseUser, getIdToken, loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [matches, setMatches] = useState<SchemeMatchResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    } else if (user && token) {
-      fetchMatches();
-    }
-  }, [user, token, authLoading, router]);
-
   const fetchMatches = async () => {
+    const token = await getIdToken();
     if (!token) return;
     setLoading(true);
     try {
@@ -43,7 +36,15 @@ export default function GovernmentSchemesPage() {
     }
   };
 
-  if (authLoading || (!user && loading)) {
+  useEffect(() => {
+    if (!authLoading && !firebaseUser) {
+      router.push("/login");
+    } else if (firebaseUser) {
+      fetchMatches();
+    }
+  }, [firebaseUser, authLoading, router]);
+
+  if (authLoading || (!firebaseUser && loading)) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-950 text-white">
         <Loader2 className="h-8 w-8 animate-spin text-amber-500" />

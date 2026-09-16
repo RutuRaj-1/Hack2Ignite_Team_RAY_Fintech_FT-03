@@ -47,6 +47,13 @@ class Settings(BaseSettings):
     # --- ML ---
     ml_models_path: str = "./data/models"
 
+    # --- AI & LLM Provider (FT-01 Financial Coach) ---
+    llm_provider: str = "ollama"  # "ollama" | "gemini" | "openai" | "fallback"
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3"
+    gemini_api_key: str = ""
+    openai_api_key: str = ""
+
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.allowed_origins.split(",")]
