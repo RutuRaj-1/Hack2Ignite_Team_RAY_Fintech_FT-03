@@ -74,6 +74,19 @@ def verify_firebase_token(id_token: str) -> dict:
     if app is None:
         # Fallback for dev mode when service account file is not yet configured
         if settings.app_debug or settings.app_env in ("development", "test"):
+            import base64
+            try:
+                parts = id_token.split(".")
+                if len(parts) >= 2:
+                    payload = parts[1] + "=="
+                    data = json.loads(base64.urlsafe_b64decode(payload.encode("utf-8")))
+                    return {
+                        "uid": data.get("user_id") or data.get("sub") or "demo-msme-user-001",
+                        "email": data.get("email", "demo@finbridge.in"),
+                        "name": data.get("name", "MSME Owner"),
+                    }
+            except Exception:
+                pass
             return {
                 "uid": "demo-msme-user-001",
                 "email": "demo@finbridge.in",

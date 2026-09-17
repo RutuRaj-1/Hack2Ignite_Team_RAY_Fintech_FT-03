@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { registerUser, ApiError } from "@/lib/api";
+import { registerUser, loginUser, ApiError } from "@/lib/api";
 import { User, Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
@@ -22,24 +22,39 @@ export default function RegisterPage() {
     if (password !== confirmPassword) { setError("Passwords do not match."); return; }
     setLoading(true);
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      try { await updateProfile(cred.user, { displayName: name }); } catch { /* non-fatal */ }
-      const idToken = await cred.user.getIdToken();
-      await registerUser(idToken, name.trim(), email.trim());
-      navigate("/onboarding");
+      let idToken: string;
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        try { await updateProfile(cred.user, { displayName: name }); } catch { /* non-fatal */ }
+        idToken = await cred.user.getIdToken();
+      } catch (fbErr: any) {
+        if (fbErr?.code === "auth/email-already-in-use") {
+          // Account already created in Firebase — authenticate directly with provided password
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          idToken = await cred.user.getIdToken();
+        } else {
+          throw fbErr;
+        }
+      }
+
+      // Sync user profile to backend
+      const res = await registerUser(idToken, name.trim() || "MSME Owner", email.trim());
+      navigate(res.user.has_business ? "/dashboard" : "/onboarding");
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         setError(err.message);
       } else if (err && typeof err === "object" && "code" in err) {
         const fbErr = err as { code: string; message: string };
         const map: Record<string, string> = {
-          "auth/email-already-in-use": "An account with this email already exists.",
+          "auth/email-already-in-use": "An account with this email already exists. Please sign in.",
+          "auth/wrong-password": "An account with this email exists, but the password was incorrect. Please sign in.",
+          "auth/invalid-credential": "An account with this email exists, but credentials didn't match. Please sign in.",
           "auth/invalid-email": "Invalid email address format.",
-          "auth/weak-password": "Password is too weak. Choose a stronger one.",
+          "auth/weak-password": "Password is too weak. Choose a stronger one (min 6 chars).",
         };
         setError(map[fbErr.code] || fbErr.message || "Failed to create account.");
       } else {
-        setError("An unexpected error occurred during registration.");
+        setError("An unexpected error occurred during registration. Please verify your details.");
       }
     } finally {
       setLoading(false);

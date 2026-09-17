@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
+import { checkHealth } from "@/lib/api";
 import {
   LayoutDashboard,
   Receipt,
@@ -14,6 +15,9 @@ import {
   Menu,
   X,
   Zap,
+  Calculator,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -21,12 +25,31 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate("/login");
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    let mounted = true;
+    const verifyApi = async () => {
+      try {
+        await checkHealth();
+        if (mounted) setApiOnline(true);
+      } catch {
+        if (mounted) setApiOnline(false);
+      }
+    };
+    verifyApi();
+    const interval = setInterval(verifyApi, 30000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   if (loading || !user) {
     return (
@@ -41,14 +64,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   const navItems = [
-    { name: "Dashboard",    href: "/dashboard",       icon: LayoutDashboard },
-    { name: "Transactions", href: "/transactions",     icon: Receipt },
-    { name: "Analytics",    href: "/analytics",        icon: BarChart3 },
-    { name: "Fraud & Risk", href: "/fraud-alerts",     icon: ShieldAlert },
-    { name: "Trust Score",  href: "/credit-profile",   icon: Target },
-    { name: "Micro-Loan",   href: "/loan",             icon: Briefcase },
-    { name: "Schemes",      href: "/schemes",          icon: Landmark },
-    { name: "AI Coach",     href: "/financial-coach",  icon: Bot },
+    { name: "Dashboard",       href: "/dashboard",       icon: LayoutDashboard },
+    { name: "Transactions",    href: "/transactions",    icon: Receipt },
+    { name: "Analytics",       href: "/analytics",       icon: BarChart3 },
+    { name: "Fraud & Risk",    href: "/fraud-alerts",    icon: ShieldAlert },
+    { name: "Trust Score",     href: "/credit-profile",  icon: Target },
+    { name: "Micro-Loan",      href: "/loan",            icon: Briefcase },
+    { name: "Loan Simulator",  href: "/loan/simulator",  icon: Calculator },
+    { name: "Schemes",         href: "/schemes",         icon: Landmark },
+    { name: "AI Coach",        href: "/financial-coach", icon: Bot },
   ];
 
   const handleSignOut = async () => {
@@ -114,6 +138,21 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <p className="text-xs font-semibold text-white truncate">{user.name || "MSME Owner"}</p>
             <p className="text-[10px] font-mono text-slate-500 truncate">{user.email}</p>
           </div>
+        </div>
+
+        {/* Backend API status */}
+        <div className="mb-3 px-2 py-1.5 rounded-lg text-[10px] font-mono flex items-center justify-between"
+          style={{
+            background: apiOnline === true ? "rgba(16,185,129,0.08)" : apiOnline === false ? "rgba(239,68,68,0.08)" : "rgba(148,163,184,0.08)",
+            border: `1px solid ${apiOnline === true ? "rgba(16,185,129,0.2)" : apiOnline === false ? "rgba(239,68,68,0.2)" : "rgba(148,163,184,0.2)"}`
+          }}>
+          <div className="flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${apiOnline === true ? "bg-emerald-400 animate-pulse" : apiOnline === false ? "bg-red-400" : "bg-slate-400"}`} />
+            <span className={apiOnline === true ? "text-emerald-300" : apiOnline === false ? "text-red-300" : "text-slate-400"}>
+              {apiOnline === true ? "FastAPI Connected" : apiOnline === false ? "Backend Offline" : "Checking API..."}
+            </span>
+          </div>
+          <span className="text-[9px] text-slate-500">:8000</span>
         </div>
         <button
           onClick={handleSignOut}

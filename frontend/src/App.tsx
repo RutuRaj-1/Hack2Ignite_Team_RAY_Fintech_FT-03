@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/lib/auth-context";
+import { ProtectedRoute, PublicOnlyRoute } from "@/components/RouteGuards";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
@@ -20,19 +21,110 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Public Landing */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/analytics" element={<AnalyticsPage />} />
-          <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/credit-profile" element={<CreditProfilePage />} />
-          <Route path="/fraud-alerts" element={<FraudAlertsPage />} />
-          <Route path="/loan" element={<LoanPage />} />
-          <Route path="/loan/simulator" element={<LoanSimulatorPage />} />
-          <Route path="/schemes" element={<SchemesPage />} />
-          <Route path="/financial-coach" element={<FinancialCoachPage />} />
+
+          {/* Guest Only Auth Pages */}
+          <Route
+            path="/login"
+            element={
+              <PublicOnlyRoute>
+                <LoginPage />
+              </PublicOnlyRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicOnlyRoute>
+                <RegisterPage />
+              </PublicOnlyRoute>
+            }
+          />
+
+          {/* Protected Application Workflows */}
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute>
+                <OnboardingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <AnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/transactions"
+            element={
+              <ProtectedRoute>
+                <TransactionsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/credit-profile"
+            element={
+              <ProtectedRoute>
+                <CreditProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fraud-alerts"
+            element={
+              <ProtectedRoute>
+                <FraudAlertsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/loan"
+            element={
+              <ProtectedRoute>
+                <LoanPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/loan/simulator"
+            element={
+              <ProtectedRoute>
+                <LoanSimulatorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/schemes"
+            element={
+              <ProtectedRoute>
+                <SchemesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/financial-coach"
+            element={
+              <ProtectedRoute>
+                <FinancialCoachPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 404 Fallback */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>

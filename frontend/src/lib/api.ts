@@ -140,7 +140,15 @@ async function request<T>(
     headers["Authorization"] = `Bearer ${idToken}`;
   }
 
-  const response = await fetch(url, { ...options, headers });
+  let response: Response;
+  try {
+    response = await fetch(url, { ...options, headers });
+  } catch {
+    throw new ApiError(
+      "Unable to connect to FINBRIDGE backend server (http://localhost:8000). Please ensure the backend server is running.",
+      0
+    );
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));

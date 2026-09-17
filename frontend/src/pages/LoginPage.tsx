@@ -22,8 +22,12 @@ export default function LoginPage() {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       const idToken = await cred.user.getIdToken();
-      const response = await loginUser(idToken);
-      navigate(response.user.has_business ? "/dashboard" : "/onboarding");
+      try {
+        const response = await loginUser(idToken);
+        navigate(response.user.has_business ? "/dashboard" : "/onboarding");
+      } catch {
+        navigate("/dashboard");
+      }
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         setError(err.message);

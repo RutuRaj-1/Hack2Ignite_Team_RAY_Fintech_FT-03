@@ -41,20 +41,19 @@ async def register(
     firebase_uid: str = decoded["uid"]
     service = AuthService(db)
 
-    # 2. Check for existing user (duplicate email or uid)
+    # 2. Check for existing user (duplicate email or uid) - idempotent handling
     existing = await service.get_by_firebase_uid(firebase_uid)
     if existing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="An account with this Firebase UID already exists.",
-        )
+        return AuthResponse(user=UserResponse.from_user(existing), message="Account already registered.")
 
     existing_email = await service.get_by_email(body.email)
     if existing_email:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="An account with this email already exists.",
-        )
+        existing_email.firebase_uid = firebase_uid
+        if body.name:
+            existing_email.name = body.name
+        await db.commit()
+        await db.refresh(existing_email)
+        return AuthResponse(user=UserResponse.from_user(existing_email), message="Account synced successfully.")
 
     # 3. Create user
     user = await service.create_user(
@@ -91,10 +90,23 @@ async def login(
     service = AuthService(db)
     user = await service.get_by_firebase_uid(firebase_uid)
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found. Please complete registration first.",
-        )
+        # Fallback by email if exists
+        email = decoded.get("email")
+        if email:
+            user = await service.get_by_email(email)
+            if user:
+                user.firebase_uid = firebase_uid
+                await db.commit()
+                await db.refresh(user)
+        # If still not found, auto-provision user from verified Firebase token
+        if user is None:
+            user_name = decoded.get("name") or (email.split("@")[0] if email else "MSME Owner")
+            user_email = email or f"{firebase_uid[:8]}@finbridge.in"
+            user = await service.create_user(
+                firebase_uid=firebase_uid,
+                name=user_name,
+                email=user_email,
+            )
 
     return AuthResponse(user=UserResponse.from_user(user), message="Login successful.")
 
