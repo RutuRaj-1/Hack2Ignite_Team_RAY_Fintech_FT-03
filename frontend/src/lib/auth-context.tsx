@@ -75,27 +75,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-      setFirebaseUser(fbUser);
+    let unsubscribe = () => {};
+    try {
+      if (auth && auth.app) {
+        unsubscribe = onAuthStateChanged(
+          auth,
+          async (fbUser) => {
+            setFirebaseUser(fbUser);
 
-      if (fbUser) {
-        try {
-          const token = await fbUser.getIdToken();
-          const user = await getMe(token);
-          setDbUser(user);
-        } catch (err) {
-          if (err instanceof ApiError && err.statusCode === 401) {
-            setDbUser(null);
+            if (fbUser) {
+              try {
+                const token = await fbUser.getIdToken();
+                const user = await getMe(token);
+                setDbUser(user);
+              } catch (err) {
+                if (err instanceof ApiError && err.statusCode === 401) {
+                  setDbUser(null);
+                }
+              }
+            } else {
+              setDbUser(null);
+            }
+
+            setLoading(false);
+          },
+          (error) => {
+            console.warn("Auth state change error:", error);
+            setLoading(false);
           }
-        }
+        );
       } else {
-        setDbUser(null);
+        setLoading(false);
       }
-
+    } catch (err) {
+      console.warn("Firebase Auth listener error:", err);
       setLoading(false);
-    });
+    }
 
-    return unsubscribe;
+    return () => {
+      try {
+        unsubscribe();
+      } catch {
+        // ignore
+      }
+    };
   }, []);
 
   const loginDemo = useCallback(async () => {
