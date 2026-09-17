@@ -8,13 +8,13 @@ import { getAuth, type Auth } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBtQgYoay-BhXvyQZ0OXiFTIXqyiY5uu4Y",
-  authDomain: "finbridge-da1d1.firebaseapp.com",
-  projectId: "finbridge-da1d1",
-  storageBucket: "finbridge-da1d1.firebasestorage.app",
-  messagingSenderId: "875010250826",
-  appId: "1:875010250826:web:a83124ccda46461a0e6eb3",
-  measurementId: "G-GGJ0MPB80D",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Singleton pattern — prevent re-initialization during hot reload
