@@ -33,7 +33,7 @@ Loan Assessment & Repayment Simulation
 ```
 
 ## 4. Tech Stack
-- **Frontend:** Next.js 16, TypeScript, Tailwind CSS, Recharts
+- **Frontend:** React 18, Vite, TypeScript, Tailwind CSS, Recharts
 - **Backend:** Python 3.14, FastAPI, Pydantic, SQLAlchemy (Async)
 - **Database:** SQLite (Dev) / PostgreSQL via asyncpg (Prod)
 - **ML / Risk:** scikit-learn (Isolation Forest), Pandas, Numpy
@@ -43,7 +43,7 @@ Loan Assessment & Repayment Simulation
 ## 5. Folder Structure
 ```text
 finbridge/
-├── frontend/          Next.js application
+├── frontend/          React 18 + Vite + TypeScript application
 ├── backend/           FastAPI modular monolith
 │   └── app/
 │       ├── main.py    FastAPI app factory
