@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from app.models.fraud_alert import FraudAlert
     from app.models.credit_profile import CreditProfile
     from app.models.loan import LoanApplication
+    from app.models.scheme_match import SchemeMatch
 
 
 class Business(UUIDMixin, TimestampMixin, Base):
