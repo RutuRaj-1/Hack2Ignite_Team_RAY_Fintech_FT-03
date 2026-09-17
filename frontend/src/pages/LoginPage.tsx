@@ -4,7 +4,9 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { loginUser, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2, Zap, Eye, EyeOff } from "lucide-react";
+import {
+  Lock, Mail, ArrowRight, AlertCircle, Loader2, Zap, Eye, EyeOff, Shield,
+} from "lucide-react";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -50,33 +52,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: "var(--bg-base)" }}>
-      {/* Background */}
-      <div className="glow-blob glow-blob-blue w-[500px] h-[500px] -top-40 -left-40" />
-      <div className="glow-blob glow-blob-purple w-[400px] h-[400px] bottom-0 right-0" />
-      <div className="absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: "linear-gradient(rgba(59,130,246,1) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,1) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--background)" }}>
+      {/* Subtle Background Gradient */}
+      <div className="fixed inset-0 pointer-events-none" style={{
+        background: "radial-gradient(ellipse at 20% 20%, rgba(61,165,166,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(22,156,115,0.04) 0%, transparent 60%)",
+      }} />
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8 animate-fade-in-up">
           <Link to="/" className="inline-flex items-center gap-3 group mb-5">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-105"
-              style={{ background: "var(--grad-brand)", boxShadow: "0 8px 24px rgba(37,99,235,0.4)" }}>
-              <ShieldCheck className="w-6 h-6 text-white" />
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-105"
+              style={{ background: "var(--brand-700)", boxShadow: "0 8px 24px rgba(35,114,119,0.3)" }}>
+              <Shield className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">
-              FIN<span className="text-blue-400">BRIDGE</span>
+            <span className="text-2xl font-extrabold tracking-tight" style={{ color: "var(--brand-900)", letterSpacing: "-0.03em" }}>
+              Fin<span style={{ color: "var(--brand-600)" }}>Bridge</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-white">Welcome back</h1>
-          <p className="text-sm text-slate-400 mt-1">Sign in to your credit intelligence hub</p>
+          <h1 className="text-h2" style={{ color: "var(--brand-900)" }}>Welcome back</h1>
+          <p className="mt-1" style={{ color: "var(--text-muted)", fontSize: "14px" }}>Sign in to your financial intelligence hub</p>
         </div>
 
         {/* Card */}
         <div className="card p-7 animate-fade-in-up delay-100">
           {error && (
-            <div className="alert alert-error mb-5">
+            <div className="alert alert-danger mb-5">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <p className="text-sm">{error}</p>
             </div>
@@ -89,38 +90,36 @@ export default function LoginPage() {
                 <Mail className="icon w-4 h-4" />
                 <input
                   type="email" required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={email} onChange={(e) => setEmail(e.target.value)}
                   placeholder="owner@enterprise.in"
                   className="input"
+                  id="login-email"
                 />
               </div>
             </div>
 
             <div>
               <label>Password</label>
-              <div className="input-icon">
+              <div className="input-icon relative">
                 <Lock className="icon w-4 h-4" />
                 <input
-                  type={showPw ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPw ? "text" : "password"} required
+                  value={password} onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="input"
                   style={{ paddingRight: "2.75rem" }}
+                  id="login-password"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-                >
+                <button type="button" onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors"
+                  style={{ color: "var(--text-muted)" }}
+                  aria-label={showPw ? "Hide password" : "Show password"}>
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="btn btn-primary w-full mt-2">
+            <button type="submit" disabled={loading} className="btn btn-primary w-full mt-2" id="login-submit">
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /><span>Verifying...</span></>
               ) : (
@@ -128,31 +127,40 @@ export default function LoginPage() {
               )}
             </button>
 
-            <div className="divider-text my-2">Or Fast Evaluation</div>
+            <div className="divider-text my-1">
+              <span>Or</span>
+            </div>
 
             <button
               type="button"
               onClick={async () => { await loginDemo(); navigate("/dashboard"); }}
-              className="w-full py-2.5 px-4 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5"
-              style={{ background: "rgba(245,158,11,0.08)", color: "#fbbf24", border: "1px solid rgba(245,158,11,0.25)" }}
+              className="w-full btn"
+              id="demo-login-btn"
+              style={{
+                background: "var(--warning-soft)",
+                color: "var(--warning-text)",
+                border: "1px solid rgba(216,155,34,0.3)",
+                justifyContent: "center",
+                gap: "0.5rem",
+              }}
             >
-              <Zap className="w-3.5 h-3.5" />
+              <Zap className="w-4 h-4" />
               Enter as Demo MSME Owner
             </button>
           </form>
 
-          <div className="mt-5 pt-5 border-t text-center" style={{ borderColor: "var(--border-subtle)" }}>
-            <p className="text-sm text-slate-400">
+          <div className="mt-5 pt-5 text-center" style={{ borderTop: "1px solid var(--border)" }}>
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
               Don't have an account?{" "}
-              <Link to="/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+              <Link to="/register" className="font-semibold transition-colors" style={{ color: "var(--brand-700)" }}>
                 Create account
               </Link>
             </p>
           </div>
         </div>
 
-        <p className="text-center text-xs text-slate-600 mt-5">
-          FINBRIDGE Secure Architecture • FT-03 Primary Engine
+        <p className="text-center text-xs mt-5" style={{ color: "var(--text-muted)" }}>
+          FinBridge Secure Platform • MSME Financial Intelligence
         </p>
       </div>
     </div>

@@ -2,25 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useAuth } from "@/lib/auth-context";
 import {
-  askCoach,
-  getCoachContext,
-  getEducationalCards,
-  type FinancialContext,
-  type EducationalCard,
-  type CoachMessage,
+  askCoach, getCoachContext, getEducationalCards,
+  type FinancialContext, type EducationalCard, type CoachMessage,
 } from "@/lib/api";
 import {
-  Bot,
-  Send,
-  Sparkles,
-  BookOpen,
-  HelpCircle,
-  TrendingUp,
-  Shield,
-  DollarSign,
-  ChevronRight,
-  RefreshCw,
-  Lightbulb,
+  Bot, Send, BookOpen, Shield, IndianRupee, ChevronRight, Lightbulb, X,
 } from "lucide-react";
 
 export default function FinancialCoachPage() {
@@ -28,8 +14,7 @@ export default function FinancialCoachPage() {
   const [messages, setMessages] = useState<CoachMessage[]>([
     {
       role: "assistant",
-      content:
-        "Hello! I am FINBRIDGE AI, your algorithmic MSME financial copilot. I analyze your real-time bank ledger, cash flow buffers, and trust score metrics to provide contextual advice on working capital, loans, and expense discipline. How can I assist you today?",
+      content: "Hello! I'm your FinBridge AI Financial Coach. I analyze your real-time bank ledger, cash flow buffers, and trust score to provide personalized advice on working capital, loans, and expense discipline. How can I help you today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -39,29 +24,20 @@ export default function FinancialCoachPage() {
   const [selectedCard, setSelectedCard] = useState<EducationalCard | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  useEffect(() => { scrollToBottom(); }, [messages]);
 
   useEffect(() => {
     const initData = async () => {
       try {
         const token = await getIdToken();
         if (token) {
-          const [ctx, edu] = await Promise.allSettled([
-            getCoachContext(token),
-            getEducationalCards(),
-          ]);
+          const [ctx, edu] = await Promise.allSettled([getCoachContext(token), getEducationalCards()]);
           if (ctx.status === "fulfilled") setContext(ctx.value);
           if (edu.status === "fulfilled") setEducationCards(edu.value.cards || []);
         }
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) { console.error(err); }
     };
     initData();
   }, []);
@@ -69,136 +45,110 @@ export default function FinancialCoachPage() {
   const handleSend = async (questionText?: string) => {
     const q = (questionText || input).trim();
     if (!q || loading) return;
-
     setInput("");
     const newMessages: CoachMessage[] = [...messages, { role: "user", content: q }];
     setMessages(newMessages);
     setLoading(true);
-
     try {
       const token = await getIdToken();
-      if (!token) throw new Error("Authentication token unavailable");
-
-      const res = await askCoach(
-        {
-          question: q,
-          history: messages.slice(-6),
-        },
-        token
-      );
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: res.answer,
-        },
-      ]);
-    } catch (err: any) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "I'm operating in offline simulated mode right now. Based on standard MSME health benchmarks: Maintain a cash-flow buffer covering at least 45 days of operational expenses, keep loan repayment burden under 30% of net margin, and digitize all supplier transactions to optimize your FINBRIDGE Trust Score.",
-        },
-      ]);
+      if (!token) throw new Error("Auth required");
+      const res = await askCoach({ question: q, history: messages.slice(-6) }, token);
+      setMessages((prev) => [...prev, { role: "assistant", content: res.answer }]);
+    } catch {
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: "I'm in offline mode right now. Based on MSME benchmarks: Maintain a 45-day cash buffer, keep loan repayment burden under 30% of net margin, and digitize supplier transactions to improve your FinBridge Trust Score.",
+      }]);
     } finally {
       setLoading(false);
     }
   };
 
   const samplePrompts = [
-    "How can I improve my FINBRIDGE Trust Score to 80+?",
-    "Is my current cash flow safe for a ₹3 Lakh expansion loan?",
-    "What government subsidies can my business claim?",
-    "How should I optimize my operating expense ratio?",
+    "How can I improve my Trust Score to 80+?",
+    "Is my cash flow safe for a ₹3 Lakh loan?",
+    "What government subsidies can I claim?",
+    "How do I reduce my expense ratio?",
   ];
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 animate-fadeIn">
+      <div className="space-y-5 page-enter">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-              <Bot className="text-blue-400" size={26} />
-              AI Financial Copilot & Strategic Advisor
-            </h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Context-aware LLM grounded in your real-time verified ledger, cash-flow metrics, and credit parameters.
-            </p>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="badge badge-ai">FT-01</span>
+            <span className="badge badge-muted">AI Coach</span>
           </div>
+          <h1 className="text-h1 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "var(--ai-soft)" }}>
+              <Bot size={18} style={{ color: "var(--ai)" }} />
+            </div>
+            AI Financial Coach
+          </h1>
+          <p className="mt-1" style={{ color: "var(--text-muted)", fontSize: "14px" }}>
+            Context-aware advisor grounded in your live ledger, cash flow, and credit metrics.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Chat Container (Left) */}
-          <div className="lg:col-span-8 glass-card border border-white/5 flex flex-col h-[650px]">
-            {/* Context Telemetry Bar */}
+          {/* Chat Window */}
+          <div className="lg:col-span-8 card flex flex-col" style={{ height: "640px" }}>
+            {/* Context Bar */}
             {context && (
-              <div className="p-3 bg-slate-900/90 border-b border-white/5 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-4 text-slate-300">
-                  <span className="flex items-center gap-1.5 font-mono">
-                    <Shield size={13} className="text-blue-400" /> Score:{" "}
-                    <strong className="text-white">{context.trust_score}</strong>
+              <div className="px-4 py-2.5 flex items-center justify-between text-xs"
+                style={{ background: "var(--brand-50)", borderBottom: "1px solid var(--brand-100)" }}>
+                <div className="flex items-center gap-4">
+                  <span className="flex items-center gap-1.5 font-medium" style={{ color: "var(--brand-800)" }}>
+                    <Shield size={12} style={{ color: "var(--brand-700)" }} />
+                    Trust: <strong>{context.trust_score}</strong>
                   </span>
-                  <span className="flex items-center gap-1.5 font-mono">
-                    <DollarSign size={13} className="text-emerald-400" /> Margin:{" "}
-                    <strong className="text-emerald-300">
-                      ₹{Math.round(context.net_cash_flow).toLocaleString()}
-                    </strong>
+                  <span className="flex items-center gap-1.5 font-medium" style={{ color: "var(--success-text)" }}>
+                    <IndianRupee size={12} style={{ color: "var(--success)" }} />
+                    Margin: <strong>₹{Math.round(context.net_cash_flow).toLocaleString()}</strong>
                   </span>
-                  <span className="hidden sm:inline font-mono text-slate-400">
+                  <span className="hidden sm:inline" style={{ color: "var(--text-muted)" }}>
                     Ratio: {context.expense_ratio.toFixed(1)}%
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
-                  Live Grounding Active
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--brand-700)" }}>
+                  Live Context Active
                 </span>
               </div>
             )}
 
-            {/* Chat Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4">
+            {/* Messages */}
+            <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-4" style={{ background: "var(--background)" }}>
               {messages.map((m, idx) => {
                 const isUser = m.role === "user";
                 return (
-                  <div
-                    key={idx}
-                    className={`flex items-start gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                        isUser
-                          ? "bg-blue-600 text-white font-mono text-xs font-bold"
-                          : "bg-purple-600/30 border border-purple-500/30 text-purple-300"
-                      }`}
-                    >
-                      {isUser ? "U" : <Bot size={16} />}
+                  <div key={idx} className={`flex items-end gap-2.5 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+                      style={{
+                        background: isUser ? "var(--brand-700)" : "var(--ai-soft)",
+                        border: isUser ? "none" : "1px solid rgba(116,87,200,0.2)",
+                        color: isUser ? "#fff" : "var(--ai)",
+                      }}>
+                      {isUser ? "U" : <Bot size={14} />}
                     </div>
-                    <div
-                      className={`max-w-[80%] p-3.5 rounded-2xl text-xs leading-relaxed ${
-                        isUser
-                          ? "bg-blue-600 text-white rounded-tr-none"
-                          : "bg-slate-900/80 border border-white/5 text-slate-200 rounded-tl-none space-y-1.5"
-                      }`}
-                    >
-                      <p className="whitespace-pre-wrap">{m.content}</p>
+                    <div className={`chat-bubble ${isUser ? "chat-bubble-user" : "chat-bubble-ai"}`}>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.content}</p>
                     </div>
                   </div>
                 );
               })}
 
               {loading && (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-purple-600/30 border border-purple-500/30 text-purple-300 flex items-center justify-center">
-                    <Bot size={16} />
+                <div className="flex items-end gap-2.5">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs"
+                    style={{ background: "var(--ai-soft)", border: "1px solid rgba(116,87,200,0.2)", color: "var(--ai)" }}>
+                    <Bot size={14} />
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-white/5 text-xs text-slate-400 flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce [animation-delay:0.2s]" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-bounce [animation-delay:0.4s]" />
-                    <span className="font-mono text-[11px] ml-1">Analyzing financial telemetry...</span>
+                  <div className="chat-bubble chat-bubble-ai flex items-center gap-1.5">
+                    {[0, 0.2, 0.4].map((d, i) => (
+                      <span key={i} className="w-2 h-2 rounded-full animate-bounce"
+                        style={{ background: "var(--ai)", animationDelay: `${d}s` }} />
+                    ))}
                   </div>
                 </div>
               )}
@@ -206,114 +156,118 @@ export default function FinancialCoachPage() {
             </div>
 
             {/* Quick Prompts */}
-            <div className="px-4 py-2 border-t border-white/5 bg-slate-900/40 flex items-center gap-2 overflow-x-auto">
-              <span className="text-[10px] font-mono uppercase text-slate-500 flex-shrink-0">Suggestions:</span>
+            <div className="px-4 py-2 flex items-center gap-2 overflow-x-auto"
+              style={{ borderTop: "1px solid var(--border)", background: "var(--surface)" }}>
+              <span className="text-[10px] font-semibold uppercase tracking-wider flex-shrink-0" style={{ color: "var(--text-muted)", letterSpacing: "0.05em" }}>
+                Try:
+              </span>
               {samplePrompts.map((p, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSend(p)}
-                  className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-white/5 text-[11px] text-slate-300 whitespace-nowrap flex-shrink-0 transition-all"
-                >
+                <button key={i} onClick={() => handleSend(p)}
+                  className="px-2.5 py-1 rounded-full text-xs whitespace-nowrap flex-shrink-0 transition-all hover:shadow-sm"
+                  style={{
+                    background: "var(--brand-50)", border: "1px solid var(--brand-100)",
+                    color: "var(--brand-800)", fontSize: "11px",
+                  }}>
                   {p}
                 </button>
               ))}
             </div>
 
             {/* Input Bar */}
-            <div className="p-3 border-t border-white/5 bg-slate-900/90 flex items-center gap-2">
+            <div className="p-3 flex items-center gap-2"
+              style={{ borderTop: "1px solid var(--border)", background: "var(--surface)" }}>
               <input
                 type="text"
-                placeholder="Ask any question about working capital, cash flow, or debt management..."
+                className="input"
+                style={{ borderRadius: "999px", fontSize: "13px", padding: "0.5rem 1rem" }}
+                placeholder="Ask about working capital, loans, or trust score improvement..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
               />
               <button
                 onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
-                className="btn btn-primary px-4 py-2.5 rounded-xl flex items-center justify-center disabled:opacity-50"
+                className="btn btn-primary"
+                style={{ borderRadius: "999px", padding: "0.5rem 0.875rem", minHeight: "38px" }}
               >
-                <Send size={15} />
+                <Send size={14} />
               </button>
             </div>
           </div>
 
-          {/* Education & Best Practices Cards (Right) */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="glass-card p-5 border border-white/5 space-y-4">
-              <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                <BookOpen className="text-blue-400" size={18} />
-                MSME Financial Knowledge Base
-              </h3>
-              <p className="text-xs text-slate-400">
-                Core concepts to improve creditworthiness, working capital health, and loan sanction terms.
-              </p>
-
-              <div className="space-y-3 overflow-y-auto max-h-[500px] pr-1">
-                {educationCards.length > 0 ? (
-                  educationCards.map((card) => (
-                    <div
-                      key={card.id}
-                      onClick={() => setSelectedCard(card)}
-                      className="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-blue-400 uppercase tracking-wider">
-                          {card.topic}
-                        </span>
-                        <ChevronRight size={14} className="text-slate-500" />
-                      </div>
-                      <h4 className="text-xs font-bold text-white">{card.title}</h4>
-                      <p className="text-[11px] text-slate-400 line-clamp-2">{card.summary}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-4 rounded-xl bg-slate-900/60 border border-white/5 text-xs space-y-2">
-                    <p className="font-bold text-white flex items-center gap-1.5">
-                      <Lightbulb size={14} className="text-amber-400" /> Debt-Service Coverage (DSCR)
-                    </p>
-                    <p className="text-slate-400 text-[11px] leading-relaxed">
-                      Lenders look for a DSCR of 1.3x or higher. This means your net cash surplus should exceed total monthly EMI obligations by at least 30%.
-                    </p>
-                  </div>
-                )}
+          {/* Knowledge Base */}
+          <div className="lg:col-span-4 card p-5 space-y-4 flex flex-col" style={{ maxHeight: "640px" }}>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <BookOpen size={14} style={{ color: "var(--brand-700)" }} />
+                <h3 className="font-semibold" style={{ color: "var(--brand-900)", fontSize: "14px" }}>Knowledge Base</h3>
               </div>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                Core concepts for creditworthiness, working capital, and loan sanction terms.
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
+              {educationCards.length > 0 ? (
+                educationCards.map((card) => (
+                  <div key={card.id} onClick={() => setSelectedCard(card)}
+                    className="p-3.5 rounded-xl cursor-pointer transition-all hover:shadow-md group"
+                    style={{ background: "var(--background)", border: "1px solid var(--border)" }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="badge badge-ai text-[9px]">{card.topic}</span>
+                      <ChevronRight size={13} style={{ color: "var(--text-muted)" }}
+                        className="transition-transform group-hover:translate-x-0.5" />
+                    </div>
+                    <h4 className="text-xs font-bold mb-0.5" style={{ color: "var(--text-primary)" }}>{card.title}</h4>
+                    <p className="text-[11px] line-clamp-2" style={{ color: "var(--text-muted)" }}>{card.summary}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="p-4 rounded-xl" style={{ background: "var(--warning-soft)", border: "1px solid rgba(216,155,34,0.2)" }}>
+                  <p className="font-bold flex items-center gap-1.5 text-xs mb-1" style={{ color: "var(--warning-text)" }}>
+                    <Lightbulb size={13} /> Debt-Service Coverage (DSCR)
+                  </p>
+                  <p className="text-[11px] leading-relaxed" style={{ color: "var(--warning-text)" }}>
+                    Lenders look for a DSCR of 1.3x or higher. Your net cash surplus should exceed monthly EMI by at least 30%.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Knowledge Modal */}
+        {/* Knowledge Card Modal */}
         {selectedCard && (
-          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="glass-card max-w-lg w-full p-6 border border-white/10 space-y-4 animate-scaleUp">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(23,40,37,0.4)", backdropFilter: "blur(4px)" }}>
+            <div className="card max-w-lg w-full p-6 space-y-4 animate-scale-up" style={{ boxShadow: "var(--shadow-lg)" }}>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono text-blue-400 uppercase tracking-wider">
-                  {selectedCard.topic}
-                </span>
-                <button onClick={() => setSelectedCard(null)} className="text-slate-400 hover:text-white">
-                  ✕
+                <span className="badge badge-ai">{selectedCard.topic}</span>
+                <button onClick={() => setSelectedCard(null)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors" style={{ color: "var(--text-muted)" }}>
+                  <X size={16} />
                 </button>
               </div>
 
-              <h3 className="text-lg font-bold text-white">{selectedCard.title}</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">{selectedCard.detailed_explanation}</p>
+              <h3 className="font-bold" style={{ color: "var(--brand-900)", fontSize: "17px" }}>{selectedCard.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>{selectedCard.detailed_explanation}</p>
 
-              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-200">
-                <p className="font-bold text-emerald-300">Actionable Rule of Thumb:</p>
-                <p className="mt-1">{selectedCard.practical_tip}</p>
+              <div className="alert alert-success text-sm">
+                <Lightbulb size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+                <div>
+                  <p className="font-semibold mb-0.5">Actionable Tip</p>
+                  <p>{selectedCard.practical_tip}</p>
+                </div>
               </div>
 
               {selectedCard.sample_question && (
                 <button
-                  onClick={() => {
-                    const q = selectedCard.sample_question;
-                    setSelectedCard(null);
-                    handleSend(q);
-                  }}
-                  className="w-full btn btn-secondary text-xs py-2 text-blue-400"
+                  onClick={() => { setSelectedCard(null); handleSend(selectedCard.sample_question); }}
+                  className="btn btn-outline w-full text-sm"
+                  style={{ justifyContent: "flex-start", gap: "0.5rem" }}
                 >
-                  Ask Coach: "{selectedCard.sample_question}"
+                  <Bot size={14} />
+                  Ask: "{selectedCard.sample_question}"
                 </button>
               )}
             </div>

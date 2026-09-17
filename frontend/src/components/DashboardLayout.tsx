@@ -16,8 +16,7 @@ import {
   X,
   Zap,
   Calculator,
-  Wifi,
-  WifiOff,
+  ChevronRight,
 } from "lucide-react";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -53,26 +52,23 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: "var(--bg-base)" }}>
-        <div className="relative w-12 h-12">
-          <div className="absolute inset-0 rounded-full border-2 border-blue-500/20"></div>
-          <div className="absolute inset-0 rounded-full border-t-2 border-blue-500 animate-spin"></div>
-        </div>
-        <p className="text-sm font-mono text-slate-400">Loading FINBRIDGE Platform...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: "var(--background)" }}>
+        <div className="spinner" />
+        <p className="text-sm text-body" style={{ color: "var(--text-muted)" }}>Loading FinBridge...</p>
       </div>
     );
   }
 
   const navItems = [
-    { name: "Dashboard",       href: "/dashboard",       icon: LayoutDashboard },
-    { name: "Transactions",    href: "/transactions",    icon: Receipt },
-    { name: "Analytics",       href: "/analytics",       icon: BarChart3 },
-    { name: "Fraud & Risk",    href: "/fraud-alerts",    icon: ShieldAlert },
-    { name: "Trust Score",     href: "/credit-profile",  icon: Target },
-    { name: "Micro-Loan",      href: "/loan",            icon: Briefcase },
-    { name: "Loan Simulator",  href: "/loan/simulator",  icon: Calculator },
-    { name: "Schemes",         href: "/schemes",         icon: Landmark },
-    { name: "AI Coach",        href: "/financial-coach", icon: Bot },
+    { name: "Dashboard",      href: "/dashboard",       icon: LayoutDashboard },
+    { name: "Transactions",   href: "/transactions",    icon: Receipt },
+    { name: "Analytics",      href: "/analytics",       icon: BarChart3 },
+    { name: "Fraud & Risk",   href: "/fraud-alerts",    icon: ShieldAlert },
+    { name: "Trust Score",    href: "/credit-profile",  icon: Target },
+    { name: "Micro-Loan",     href: "/loan",            icon: Briefcase },
+    { name: "Loan Simulator", href: "/loan/simulator",  icon: Calculator },
+    { name: "Schemes",        href: "/schemes",         icon: Landmark },
+    { name: "AI Coach",       href: "/financial-coach", icon: Bot },
   ];
 
   const handleSignOut = async () => {
@@ -85,24 +81,25 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div className="p-5 border-b" style={{ borderColor: "var(--border-subtle)" }}>
+      <div className="p-5" style={{ borderBottom: "1px solid var(--border)" }}>
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "var(--grad-brand)" }}>
-            <Zap size={18} className="text-white fill-white" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: "var(--brand-700)" }}>
+            <Zap size={17} className="text-white fill-white" />
           </div>
           <div>
-            <h1 className="text-base font-bold text-white tracking-tight">
-              FIN<span className="text-blue-400">BRIDGE</span>
+            <h1 className="text-base font-bold tracking-tight" style={{ color: "var(--brand-900)", letterSpacing: "-0.025em" }}>
+              Fin<span style={{ color: "var(--brand-600)" }}>Bridge</span>
             </h1>
-            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">MSME Engine FT-03</p>
+            <p className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-muted)", fontSize: "10px", letterSpacing: "0.06em" }}>MSME Intelligence</p>
           </div>
         </Link>
 
         {isDemo && (
-          <div className="mt-3 px-2.5 py-1.5 rounded-lg text-[10px] font-mono font-bold text-amber-400 flex items-center justify-between"
-            style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}>
+          <div className="mt-3 px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center justify-between"
+            style={{ background: "var(--warning-soft)", border: "1px solid rgba(216,155,34,0.25)", color: "var(--warning-text)" }}>
             <span>⚡ DEMO MODE</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--warning)" }} />
           </div>
         )}
       </div>
@@ -120,43 +117,49 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               onClick={() => setIsMobileOpen(false)}
               className={`nav-item ${isActive ? "active" : ""}`}
             >
-              <Icon className={`nav-icon w-4 h-4 ${isActive ? "text-blue-400" : "text-slate-500"}`} />
+              <Icon className={`nav-icon w-4 h-4`} />
               <span>{item.name}</span>
+              {isActive && <ChevronRight size={13} className="ml-auto" style={{ color: "var(--brand-600)" }} />}
             </Link>
           );
         })}
       </div>
 
       {/* User Footer */}
-      <div className="p-4 border-t" style={{ borderColor: "var(--border-subtle)" }}>
+      <div className="p-4" style={{ borderTop: "1px solid var(--border)" }}>
+        {/* API Status */}
+        <div className="mb-3 px-2.5 py-1.5 rounded-lg text-[10px] flex items-center justify-between"
+          style={{
+            background: apiOnline === true ? "var(--success-soft)" : apiOnline === false ? "var(--danger-soft)" : "#EFF5F3",
+            border: `1px solid ${apiOnline === true ? "rgba(22,156,115,0.2)" : apiOnline === false ? "rgba(217,101,89,0.2)" : "var(--border)"}`,
+            color: apiOnline === true ? "var(--success-text)" : apiOnline === false ? "var(--danger-text)" : "var(--text-muted)",
+          }}>
+          <div className="flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${apiOnline === true ? "animate-pulse" : ""}`}
+              style={{ background: apiOnline === true ? "var(--success)" : apiOnline === false ? "var(--danger)" : "var(--text-muted)" }} />
+            <span className="font-medium">
+              {apiOnline === true ? "Backend Online" : apiOnline === false ? "Backend Offline" : "Connecting..."}
+            </span>
+          </div>
+          <span style={{ color: "var(--text-muted)" }}>:8000</span>
+        </div>
+
+        {/* User Info */}
         <div className="flex items-center gap-3 mb-3 px-1">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
-            style={{ background: "var(--grad-brand)" }}>
+            style={{ background: "var(--brand-700)" }}>
             {user.name?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">{user.name || "MSME Owner"}</p>
-            <p className="text-[10px] font-mono text-slate-500 truncate">{user.email}</p>
+            <p className="text-xs font-semibold truncate" style={{ color: "var(--text-primary)" }}>{user.name || "MSME Owner"}</p>
+            <p className="text-[10px] truncate" style={{ color: "var(--text-muted)" }}>{user.email}</p>
           </div>
         </div>
 
-        {/* Backend API status */}
-        <div className="mb-3 px-2 py-1.5 rounded-lg text-[10px] font-mono flex items-center justify-between"
-          style={{
-            background: apiOnline === true ? "rgba(16,185,129,0.08)" : apiOnline === false ? "rgba(239,68,68,0.08)" : "rgba(148,163,184,0.08)",
-            border: `1px solid ${apiOnline === true ? "rgba(16,185,129,0.2)" : apiOnline === false ? "rgba(239,68,68,0.2)" : "rgba(148,163,184,0.2)"}`
-          }}>
-          <div className="flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${apiOnline === true ? "bg-emerald-400 animate-pulse" : apiOnline === false ? "bg-red-400" : "bg-slate-400"}`} />
-            <span className={apiOnline === true ? "text-emerald-300" : apiOnline === false ? "text-red-300" : "text-slate-400"}>
-              {apiOnline === true ? "FastAPI Connected" : apiOnline === false ? "Backend Offline" : "Checking API..."}
-            </span>
-          </div>
-          <span className="text-[9px] text-slate-500">:8000</span>
-        </div>
         <button
           onClick={handleSignOut}
-          className="btn btn-danger btn-sm w-full"
+          className="btn btn-ghost btn-sm w-full"
+          style={{ justifyContent: "flex-start", gap: "0.5rem" }}
         >
           <LogOut className="w-3.5 h-3.5" />
           Sign Out
@@ -166,19 +169,23 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen flex" style={{ background: "var(--bg-base)" }}>
+    <div className="min-h-screen flex" style={{ background: "var(--background)" }}>
       {/* Desktop Sidebar */}
       <aside className="sidebar hidden md:flex flex-col">
         <SidebarContent />
       </aside>
 
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 z-50 flex items-center justify-between px-4"
-        style={{ background: "rgba(3,7,18,0.95)", borderBottom: "1px solid var(--border-subtle)", backdropFilter: "blur(20px)" }}>
-        <Link to="/" className="font-bold text-lg text-white">
-          FIN<span className="text-blue-400">BRIDGE</span>
+      <div className="mobile-header md:hidden">
+        <Link to="/" className="font-bold text-base" style={{ color: "var(--brand-900)", letterSpacing: "-0.02em" }}>
+          Fin<span style={{ color: "var(--brand-700)" }}>Bridge</span>
         </Link>
-        <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="p-2 text-slate-400 hover:text-white transition-colors">
+        <button
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className="p-2 rounded-lg transition-colors"
+          style={{ color: "var(--text-secondary)", background: isMobileOpen ? "var(--brand-50)" : "transparent" }}
+          aria-label="Toggle navigation"
+        >
           {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
@@ -187,7 +194,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {isMobileOpen && (
         <div className="md:hidden fixed inset-0 z-40 flex">
           <div className="sidebar-overlay" onClick={() => setIsMobileOpen(false)} />
-          <aside className="sidebar relative flex flex-col pt-14 w-64">
+          <aside className="sidebar relative flex flex-col pt-14 w-64 open">
             <SidebarContent />
           </aside>
         </div>

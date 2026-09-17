@@ -2,55 +2,30 @@ import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useAuth } from "@/lib/auth-context";
 import {
-  getCreditProfile,
-  assessCredit,
-  type CreditProfileResponse,
-  type CreditComponentScores,
+  getCreditProfile, assessCredit,
+  type CreditProfileResponse, type CreditComponentScores,
 } from "@/lib/api";
 import {
-  Target,
-  ShieldCheck,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  RefreshCw,
-  Sparkles,
-  Award,
-  Layers,
-  Info,
+  Target, CheckCircle2, RefreshCw, Sparkles, Award, Layers, Info, AlertTriangle, TrendingUp,
 } from "lucide-react";
 import { TrustScoreCard } from "@/components/ui/TrustScoreCard";
 
 const COMPONENT_LABELS: Record<keyof CreditComponentScores, { label: string; desc: string }> = {
-  cash_flow_health: {
-    label: "Cash Flow Health",
-    desc: "Net liquidity surplus, positive month ratio, and operating margin buffer.",
-  },
-  financial_stability: {
-    label: "Financial Stability",
-    desc: "Operating continuity, revenue regularity, and turnover consistency.",
-  },
-  revenue_consistency: {
-    label: "Revenue Consistency",
-    desc: "Low month-to-month volatility in customer invoices and sales settlements.",
-  },
-  expense_discipline: {
-    label: "Expense Discipline",
-    desc: "Controlled overhead ratio with sustainable operational outlays.",
-  },
-  repayment_capacity: {
-    label: "Repayment Capacity",
-    desc: "Projected debt-service coverage ratio based on verified bank ledger flow.",
-  },
-  transaction_behavior: {
-    label: "Transaction Behavior",
-    desc: "Velocity of verified digital transfers, counterparty variety, and volume regularity.",
-  },
-  fraud_risk: {
-    label: "Integrity & Fraud Risk",
-    desc: "Low incidence of velocity spikes, structuring, and suspicious round figures.",
-  },
+  cash_flow_health:   { label: "Cash Flow Health",     desc: "Net liquidity surplus, positive month ratio, and operating margin buffer." },
+  financial_stability:{ label: "Financial Stability",  desc: "Operating continuity, revenue regularity, and turnover consistency." },
+  revenue_consistency:{ label: "Revenue Consistency",  desc: "Low month-to-month volatility in customer invoices and sales settlements." },
+  expense_discipline: { label: "Expense Discipline",   desc: "Controlled overhead ratio with sustainable operational outlays." },
+  repayment_capacity: { label: "Repayment Capacity",   desc: "Projected debt-service coverage ratio based on verified bank ledger flow." },
+  transaction_behavior:{label: "Transaction Behavior", desc: "Velocity of verified digital transfers, counterparty variety, and volume regularity." },
+  fraud_risk:         { label: "Integrity & Risk",     desc: "Low incidence of velocity spikes, structuring, and suspicious round figures." },
 };
+
+function scoreBar(score: number) {
+  if (score >= 75) return "var(--success)";
+  if (score >= 50) return "var(--brand-700)";
+  if (score >= 35) return "var(--warning)";
+  return "var(--danger)";
+}
 
 export default function CreditProfilePage() {
   const { getIdToken } = useAuth();
@@ -67,8 +42,7 @@ export default function CreditProfilePage() {
       if (!token) return;
       const res = await getCreditProfile(token);
       setProfile(res);
-    } catch (err: any) {
-      // If profile doesn't exist yet, try to assess
+    } catch {
       try {
         const token = await getIdToken();
         if (token) {
@@ -92,163 +66,134 @@ export default function CreditProfilePage() {
       const res = await assessCredit(token, true);
       setProfile(res);
     } catch (err: any) {
-      setErrorMsg(err.message || "Failed to assess credit.");
+      setErrorMsg(err.message || "Failed to recalculate.");
     } finally {
       setRecalculating(false);
     }
   };
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  useEffect(() => { fetchProfile(); }, []);
 
-  const formatCurrency = (num: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
+  const formatCurrency = (num: number) =>
+    new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(num);
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 animate-fadeIn">
+      <div className="space-y-6 page-enter">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-              <Target className="text-blue-400" size={26} />
-              MSME AI Trust Score & Underwriting Profile
+            <div className="flex items-center gap-2 mb-1">
+              <span className="badge badge-brand">Trust Score</span>
+              <span className="badge badge-muted">Alternative Credit</span>
+            </div>
+            <h1 className="text-h1 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "var(--brand-50)" }}>
+                <Target size={18} style={{ color: "var(--brand-700)" }} />
+              </div>
+              MSME Trust Score
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Holistic alternative creditworthiness benchmark computed from cash-flow telemetry, not collateral.
+            <p className="mt-1" style={{ color: "var(--text-muted)", fontSize: "14px" }}>
+              Alternative creditworthiness benchmark from cash-flow telemetry — not collateral.
             </p>
           </div>
-
           <button
             onClick={handleRecalculate}
             disabled={recalculating}
-            className="btn btn-primary text-xs flex items-center gap-2"
+            className="btn btn-primary flex items-center gap-2 self-start"
           >
-            <Sparkles size={14} className={recalculating ? "animate-spin text-amber-400" : "text-amber-400"} />
-            {recalculating ? "Re-Underwriting Telemetry..." : "Recalculate Trust Score"}
+            <Sparkles size={14} className={recalculating ? "animate-spin" : ""} />
+            {recalculating ? "Recalculating..." : "Recalculate Score"}
           </button>
         </div>
 
         {errorMsg && (
-          <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 flex items-start gap-3">
-            <AlertTriangle size={18} className="mt-0.5 text-rose-400 flex-shrink-0" />
-            <div className="text-xs">
-              <p className="font-semibold text-rose-200">Notice</p>
-              <p>{errorMsg}</p>
-            </div>
+          <div className="alert alert-danger">
+            <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+            <span className="text-sm">{errorMsg}</span>
           </div>
         )}
 
-        {/* Hero Score Showcase */}
+        {/* Hero Score + Model Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <TrustScoreCard score={profile?.trust_score ?? 0} />
-          </div>
+          <TrustScoreCard score={profile?.trust_score ?? 0} delay={0} />
 
-          <div className="lg:col-span-2 glass-card p-6 border border-white/5 flex flex-col justify-between">
+          <div className="lg:col-span-2 card p-6 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                  <Award className="text-blue-400" size={18} />
-                  Underwriting Engine Evaluation
-                </h3>
-                <span className="text-[11px] font-mono text-slate-400">
-                  Model: FINBRIDGE-LightGBM v2.3
-                </span>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Award size={16} style={{ color: "var(--brand-700)" }} />
+                  <h3 className="font-semibold" style={{ color: "var(--brand-900)", fontSize: "15px" }}>Underwriting Engine</h3>
+                </div>
+                <span className="badge badge-muted text-[10px]">FINBRIDGE-ML v2.3</span>
               </div>
-              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                This score is dynamically derived from real-time cash inflows, banking velocity, fraud rule clearance, and counterparty reputation. Traditional CIBIL scores penalize thin-file MSMEs; FINBRIDGE quantifies verified economic velocity.
+
+              <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--text-muted)" }}>
+                This score is derived from real-time cash inflows, banking velocity, fraud clearance,
+                and counterparty reputation. Traditional CIBIL scores penalize thin-file MSMEs —
+                FinBridge quantifies verified economic velocity instead.
               </p>
 
-              {/* Metrics Summary Strip */}
               {profile?.metrics && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-                  <div className="p-3 rounded-lg bg-slate-900/60 border border-white/5">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Monthly Inflow</p>
-                    <p className="text-sm font-mono font-bold text-white mt-1">
-                      {formatCurrency(profile.metrics.avg_monthly_revenue)}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-900/60 border border-white/5">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Monthly Outlay</p>
-                    <p className="text-sm font-mono font-bold text-white mt-1">
-                      {formatCurrency(profile.metrics.avg_monthly_expense)}
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-900/60 border border-white/5">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Expense Burden</p>
-                    <p className="text-sm font-mono font-bold text-emerald-400 mt-1">
-                      {profile.metrics.expense_ratio.toFixed(1)}%
-                    </p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-900/60 border border-white/5">
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Active Months</p>
-                    <p className="text-sm font-mono font-bold text-blue-400 mt-1">
-                      {profile.metrics.active_months} cycles
-                    </p>
-                  </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { label: "Monthly Inflow",   value: formatCurrency(profile.metrics.avg_monthly_revenue), color: "var(--brand-700)" },
+                    { label: "Monthly Outlay",   value: formatCurrency(profile.metrics.avg_monthly_expense),  color: "var(--text-primary)" },
+                    { label: "Expense Burden",   value: `${profile.metrics.expense_ratio.toFixed(1)}%`,       color: "var(--warning)" },
+                    { label: "Active Months",    value: `${profile.metrics.active_months} cycles`,            color: "var(--brand-700)" },
+                  ].map((m) => (
+                    <div key={m.label} className="p-3 rounded-xl" style={{ background: "var(--background)", border: "1px solid var(--border)" }}>
+                      <p className="text-caption mb-1">{m.label}</p>
+                      <p className="text-sm font-bold text-financial" style={{ color: m.color }}>{m.value}</p>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+            <div className="mt-4 pt-4 flex items-center justify-between text-xs"
+              style={{ borderTop: "1px solid var(--border)", color: "var(--text-muted)" }}>
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 size={14} className="text-emerald-400" /> Continuous Risk Engine Synchronized
+                <CheckCircle2 size={13} style={{ color: "var(--success)" }} />
+                Risk Engine Synchronized
               </span>
-              <span className="font-mono text-[11px] text-slate-500">
-                Last calculated: {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : "Live"}
+              <span style={{ color: "var(--text-muted)" }}>
+                Last updated: {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : "Live"}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Component Scoring Breakdown */}
+        {/* Component Score Breakdown */}
         {profile?.components && (
-          <div className="glass-card p-6 border border-white/5 space-y-5">
+          <div className="card p-6 space-y-5">
             <div>
-              <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                <Layers className="text-blue-400" size={18} />
-                Dimensional Score Attribution
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Granular vector weights contributing to the overarching 0–100 Trust Score.
+              <div className="flex items-center gap-2 mb-1">
+                <Layers size={16} style={{ color: "var(--brand-700)" }} />
+                <h3 className="font-semibold" style={{ color: "var(--brand-900)", fontSize: "15px" }}>Score Attribution</h3>
+              </div>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                Vector weights contributing to the 0–100 Trust Score.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(profile.components).map(([key, score]) => {
-                const compKey = key as keyof CreditComponentScores;
-                const info = COMPONENT_LABELS[compKey] || { label: key, desc: "" };
+                const info = COMPONENT_LABELS[key as keyof CreditComponentScores] || { label: key, desc: "" };
                 const scoreNum = typeof score === "number" ? Math.round(score) : 0;
-
-                const colorClass =
-                  scoreNum >= 75
-                    ? "bg-emerald-500 text-emerald-400"
-                    : scoreNum >= 50
-                    ? "bg-blue-500 text-blue-400"
-                    : scoreNum >= 35
-                    ? "bg-amber-500 text-amber-400"
-                    : "bg-rose-500 text-rose-400";
+                const barColor = scoreBar(scoreNum);
 
                 return (
-                  <div key={key} className="p-4 rounded-xl bg-slate-900/60 border border-white/5 space-y-2">
+                  <div key={key} className="p-4 rounded-xl space-y-2.5"
+                    style={{ background: "var(--background)", border: "1px solid var(--border)" }}>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-white">{info.label}</span>
-                      <span className="text-sm font-mono font-bold">{scoreNum}/100</span>
+                      <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{info.label}</span>
+                      <span className="text-sm font-bold text-financial" style={{ color: barColor }}>{scoreNum}<span style={{ color: "var(--text-muted)", fontWeight: 400, fontSize: "11px" }}>/100</span></span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-1000 ${colorClass.split(" ")[0]}`}
-                        style={{ width: `${Math.min(100, Math.max(5, scoreNum))}%` }}
-                      />
+                    <div className="progress-bar">
+                      <div className="progress-fill" style={{ width: `${Math.max(4, scoreNum)}%`, background: barColor }} />
                     </div>
-                    <p className="text-[11px] text-slate-400 leading-normal">{info.desc}</p>
+                    <p className="text-xs leading-snug" style={{ color: "var(--text-muted)" }}>{info.desc}</p>
                   </div>
                 );
               })}
@@ -256,54 +201,54 @@ export default function CreditProfilePage() {
           </div>
         )}
 
-        {/* Qualitative Positive & Negative Factors */}
+        {/* Positive & Negative Factors */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="glass-card p-6 border border-white/5 space-y-4">
-            <h3 className="text-base font-semibold text-emerald-400 flex items-center gap-2">
-              <CheckCircle2 size={18} />
-              Positive Underwriting Drivers
-            </h3>
-            <div className="space-y-2.5">
-              {profile?.positive_factors && profile.positive_factors.length > 0 ? (
-                profile.positive_factors.map((factor, idx) => (
-                  <div key={idx} className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/10 flex items-start gap-2.5 text-xs text-emerald-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
-                    <span>{factor}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-xs text-slate-500 font-mono py-4">No specific positive drivers indexed yet.</p>
-              )}
+          <div className="card p-6 space-y-3">
+            <div className="flex items-center gap-2 mb-1">
+              <CheckCircle2 size={16} style={{ color: "var(--success)" }} />
+              <h3 className="font-semibold" style={{ color: "var(--success-text)", fontSize: "15px" }}>
+                Positive Drivers
+              </h3>
             </div>
+            {profile?.positive_factors && profile.positive_factors.length > 0 ? (
+              profile.positive_factors.map((f, i) => (
+                <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl text-sm"
+                  style={{ background: "var(--success-soft)", border: "1px solid rgba(22,156,115,0.18)", color: "var(--success-text)" }}>
+                  <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: "var(--success)" }} />
+                  {f}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm py-4" style={{ color: "var(--text-muted)" }}>No positive drivers indexed yet. Load more transaction data.</p>
+            )}
           </div>
 
-          <div className="glass-card p-6 border border-white/5 space-y-4">
-            <h3 className="text-base font-semibold text-amber-400 flex items-center gap-2">
-              <AlertTriangle size={18} />
-              Risk Considerations & Opportunities
-            </h3>
-            <div className="space-y-2.5">
-              {profile?.negative_factors && profile.negative_factors.length > 0 ? (
-                profile.negative_factors.map((factor, idx) => (
-                  <div key={idx} className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/10 flex items-start gap-2.5 text-xs text-amber-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
-                    <span>{factor}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-xs text-slate-500 font-mono py-4">No active risk penalties registered.</p>
-              )}
+          <div className="card p-6 space-y-3">
+            <div className="flex items-center gap-2 mb-1">
+              <AlertTriangle size={16} style={{ color: "var(--warning)" }} />
+              <h3 className="font-semibold" style={{ color: "var(--warning-text)", fontSize: "15px" }}>
+                Risk Considerations
+              </h3>
             </div>
+            {profile?.negative_factors && profile.negative_factors.length > 0 ? (
+              profile.negative_factors.map((f, i) => (
+                <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl text-sm"
+                  style={{ background: "var(--warning-soft)", border: "1px solid rgba(216,155,34,0.18)", color: "var(--warning-text)" }}>
+                  <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: "var(--warning)" }} />
+                  {f}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm py-4" style={{ color: "var(--text-muted)" }}>No active risk penalties registered.</p>
+            )}
           </div>
         </div>
 
-        {/* Disclaimer Note */}
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5 text-[11px] text-slate-400 flex items-start gap-2.5">
-          <Info size={15} className="mt-0.5 text-slate-500 flex-shrink-0" />
-          <p>
-            {profile?.disclaimer ??
-              "Disclaimer: The FINBRIDGE Trust Score is a computational decision-support indicator designed for MSME lending risk modeling. Final underwriting decisions remain subject to statutory lender verification and RBI guidelines."}
-          </p>
+        {/* Disclaimer */}
+        <div className="flex items-start gap-3 p-4 rounded-xl text-xs"
+          style={{ background: "var(--surface-muted)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+          <Info size={14} style={{ flexShrink: 0, marginTop: 1 }} />
+          <p>{profile?.disclaimer ?? "Disclaimer: The FinBridge Trust Score is a computational decision-support indicator for MSME lending risk modeling. Final underwriting decisions remain subject to statutory lender verification and RBI guidelines."}</p>
         </div>
       </div>
     </DashboardLayout>

@@ -12,15 +12,12 @@ import {
 import {
   ShieldAlert,
   ShieldCheck,
-  AlertTriangle,
   Play,
   Filter,
   Bot,
   RefreshCw,
-  Clock,
-  ArrowRight,
   X,
-  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 
@@ -32,10 +29,7 @@ export default function FraudAlertsPage() {
   const [runningAnalysis, setRunningAnalysis] = useState(false);
   const [filterLevel, setFilterLevel] = useState<string>("ALL");
   const [selectedAlert, setSelectedAlert] = useState<FraudAlertResponse | null>(null);
-  const [explanation, setExplanation] = useState<{
-    explanation: string;
-    recommendation: string;
-  } | null>(null);
+  const [explanation, setExplanation] = useState<{ explanation: string; recommendation: string } | null>(null);
   const [explaining, setExplaining] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -48,7 +42,8 @@ export default function FraudAlertsPage() {
 
       const [sumRes, alertRes] = await Promise.all([
         getFraudSummary(token).catch(() => null),
-        getFraudAlerts(token, filterLevel === "ALL" ? undefined : filterLevel, 50, 0).catch(() => ({ alerts: [], total: 0, limit: 50, offset: 0 })),
+        getFraudAlerts(token, filterLevel === "ALL" ? undefined : filterLevel, 50, 0)
+          .catch(() => ({ alerts: [], total: 0, limit: 50, offset: 0 })),
       ]);
 
       if (sumRes) setSummary(sumRes);
@@ -71,7 +66,7 @@ export default function FraudAlertsPage() {
       const token = await getIdToken();
       if (!token) return;
       const res = await runFraudAnalysis(token);
-      setMsg(`Analysis complete: ${res.analyzed ?? 0} transactions evaluated through 12-vector fraud heuristic.`);
+      setMsg(`Analysis complete: ${res.analyzed ?? 0} transactions evaluated.`);
       await loadData();
     } catch (err: any) {
       setMsg(err.message || "Failed to complete fraud scan.");
@@ -87,18 +82,13 @@ export default function FraudAlertsPage() {
     try {
       const token = await getIdToken();
       if (!token) return;
-
       const reasons = alert.detected_reasons?.map((r) => `${r.rule_name}: ${r.reason}`) || [];
       const res = await explainFraudAlert(
-        {
-          amount: alert.transaction?.amount ?? 0,
-          risk_level: alert.risk_level,
-          detected_reasons: reasons,
-        },
+        { amount: alert.transaction?.amount ?? 0, risk_level: alert.risk_level, detected_reasons: reasons },
         token
       );
       setExplanation(res);
-    } catch (err: any) {
+    } catch {
       setExplanation({
         explanation: "Automated analysis indicates unusual transaction velocity or pattern matching standard anomaly thresholds.",
         recommendation: "Request corresponding vendor invoices and statutory tax receipts to reconcile.",
@@ -108,226 +98,248 @@ export default function FraudAlertsPage() {
     }
   };
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(val);
-  };
+  const formatCurrency = (val: number) =>
+    new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(val);
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 animate-fadeIn">
+      <div className="space-y-6 page-enter">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-              <ShieldAlert className="text-rose-400" size={26} />
-              AI Fraud & Anomaly Detection Surveillance
+            <div className="flex items-center gap-2 mb-1">
+              <span className="badge badge-danger">FT-02</span>
+              <span className="badge badge-muted">Risk Intelligence</span>
+            </div>
+            <h1 className="text-h1 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "var(--danger-soft)" }}>
+                <ShieldAlert size={18} style={{ color: "var(--danger)" }} />
+              </div>
+              Fraud & Risk Detection
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Multi-layer heuristic rules and behavioral anomaly models monitoring ledger integrity.
+            <p className="mt-1" style={{ color: "var(--text-muted)", fontSize: "14px" }}>
+              Multi-layer heuristic rules monitoring your transaction ledger integrity.
             </p>
           </div>
 
           <button
             onClick={handleRunAnalysis}
             disabled={runningAnalysis}
-            className="btn btn-primary text-xs flex items-center gap-2"
+            className="btn btn-primary flex items-center gap-2 self-start"
           >
-            <Play size={14} className={runningAnalysis ? "animate-spin text-white" : "text-white fill-white"} />
-            {runningAnalysis ? "Scanning Transaction Vectors..." : "Run AI Fraud Detection"}
+            <Play size={14} className={runningAnalysis ? "animate-spin" : ""} />
+            {runningAnalysis ? "Scanning..." : "Run Fraud Detection"}
           </button>
         </div>
 
+        {/* Status message */}
         {msg && (
-          <div className="p-4 rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-300 text-xs flex items-center justify-between">
-            <span>{msg}</span>
-            <button onClick={() => setMsg(null)} className="text-blue-400 hover:text-white">
+          <div className="alert alert-info">
+            <ShieldCheck size={16} style={{ flexShrink: 0 }} />
+            <span className="flex-1 text-sm">{msg}</span>
+            <button onClick={() => setMsg(null)} style={{ color: "var(--info)", flexShrink: 0 }}>
               <X size={14} />
             </button>
           </div>
         )}
 
-        {/* Risk summary cards */}
+        {/* Risk Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="glass-card p-4 border border-white/5">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Total Scanned</p>
-            <p className="text-2xl font-mono font-bold text-white mt-1">
+          <div className="card p-5">
+            <p className="text-caption mb-2">Total Scanned</p>
+            <p className="text-financial" style={{ fontSize: "28px", color: "var(--text-primary)" }}>
               {summary?.analyzed_transactions ?? 0}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Verified ledger records</p>
+            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Verified ledger records</p>
           </div>
 
-          <div className="glass-card p-4 border border-emerald-500/20 bg-emerald-500/[0.03]">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-emerald-400">Low Risk Clearance</p>
-            <p className="text-2xl font-mono font-bold text-emerald-300 mt-1">
+          <div className="card p-5" style={{ borderLeft: "4px solid var(--success)" }}>
+            <p className="text-caption mb-2" style={{ color: "var(--success-text)" }}>Low Risk</p>
+            <p className="text-financial" style={{ fontSize: "28px", color: "var(--success)" }}>
               {summary?.low_risk?.count ?? 0}
             </p>
-            <p className="text-[11px] text-emerald-400/80 mt-0.5">
+            <p className="text-xs mt-1" style={{ color: "var(--success-text)" }}>
               {summary?.low_risk?.percentage?.toFixed(1) ?? "100"}% of volume
             </p>
           </div>
 
-          <div className="glass-card p-4 border border-amber-500/20 bg-amber-500/[0.03]">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-amber-400">Medium Scrutiny</p>
-            <p className="text-2xl font-mono font-bold text-amber-300 mt-1">
+          <div className="card p-5" style={{ borderLeft: "4px solid var(--warning)" }}>
+            <p className="text-caption mb-2" style={{ color: "var(--warning-text)" }}>Medium Risk</p>
+            <p className="text-financial" style={{ fontSize: "28px", color: "var(--warning)" }}>
               {summary?.medium_risk?.count ?? 0}
             </p>
-            <p className="text-[11px] text-amber-400/80 mt-0.5">
+            <p className="text-xs mt-1" style={{ color: "var(--warning-text)" }}>
               {summary?.medium_risk?.percentage?.toFixed(1) ?? "0"}% of volume
             </p>
           </div>
 
-          <div className="glass-card p-4 border border-rose-500/20 bg-rose-500/[0.03]">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-rose-400">High Risk Anomalies</p>
-            <p className="text-2xl font-mono font-bold text-rose-300 mt-1">
+          <div className="card p-5" style={{ borderLeft: "4px solid var(--danger)" }}>
+            <p className="text-caption mb-2" style={{ color: "var(--danger-text)" }}>High Risk</p>
+            <p className="text-financial" style={{ fontSize: "28px", color: "var(--danger)" }}>
               {summary?.high_risk?.count ?? 0}
             </p>
-            <p className="text-[11px] text-rose-400/80 mt-0.5">
+            <p className="text-xs mt-1" style={{ color: "var(--danger-text)" }}>
               {summary?.open_alerts ?? 0} active flags
             </p>
           </div>
         </div>
 
-        {/* Filter Toolbar */}
+        {/* Filter + Refresh */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 flex items-center gap-1">
-              <Filter size={14} /> Filter Risk:
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs flex items-center gap-1.5" style={{ color: "var(--text-muted)" }}>
+              <Filter size={13} /> Filter:
             </span>
             {["ALL", "HIGH", "MEDIUM", "LOW"].map((level) => (
               <button
                 key={level}
                 onClick={() => setFilterLevel(level)}
-                className={`px-3 py-1 rounded-md text-xs font-mono font-medium transition-all ${
-                  filterLevel === level
-                    ? "bg-blue-600 text-white"
-                    : "bg-slate-900 border border-white/5 text-slate-400 hover:text-white"
-                }`}
+                className="btn btn-sm"
+                style={{
+                  background: filterLevel === level ? "var(--brand-700)" : "var(--surface)",
+                  color: filterLevel === level ? "#fff" : "var(--text-secondary)",
+                  border: `1px solid ${filterLevel === level ? "var(--brand-700)" : "var(--border)"}`,
+                  minHeight: "30px",
+                  padding: "0.3rem 0.75rem",
+                  fontSize: "0.75rem",
+                }}
               >
                 {level}
               </button>
             ))}
           </div>
-
-          <button onClick={loadData} className="p-2 rounded-lg bg-slate-900 border border-white/5 text-slate-400 hover:text-white">
-            <RefreshCw size={14} className={loading ? "animate-spin text-blue-400" : ""} />
+          <button
+            onClick={loadData}
+            className="btn btn-ghost btn-sm"
+            style={{ padding: "0.4rem" }}
+            aria-label="Refresh"
+          >
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
           </button>
         </div>
 
-        {/* Alerts List */}
+        {/* Alert Cards */}
         <div className="space-y-3">
           {alerts.length > 0 ? (
-            alerts.map((al) => (
-              <div
-                key={al.id}
-                className="glass-card p-4 border border-white/5 hover:border-white/10 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
-              >
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex items-center gap-2.5">
-                    <RiskBadge level={al.risk_level} />
-                    <span className="text-xs font-mono text-slate-400">
-                      Score: <strong className="text-white">{al.risk_score}</strong>/100
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-mono">
-                      {new Date(al.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <p className="text-sm font-semibold text-white">
-                    {al.transaction ? (
-                      <>
-                        ₹{al.transaction.amount.toLocaleString()} — {al.transaction.merchant || al.transaction.category}
-                      </>
-                    ) : (
-                      `Suspicious Pattern Flag #${al.id.slice(0, 8)}`
-                    )}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {al.detected_reasons?.map((r, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-0.5 rounded bg-slate-900 border border-white/5 text-[11px] text-slate-300"
-                      >
-                        {r.rule_name || r.reason}
+            alerts.map((al) => {
+              const cardClass = al.risk_level === "HIGH" ? "card-fraud-high" : al.risk_level === "MEDIUM" ? "card-fraud-medium" : "card-fraud-low";
+              return (
+                <div key={al.id} className={`${cardClass} p-4 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 hover:shadow-md`}>
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2.5">
+                      <RiskBadge level={al.risk_level} />
+                      <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                        Risk Score: <strong style={{ color: "var(--text-primary)" }}>{al.risk_score}/100</strong>
                       </span>
-                    ))}
-                  </div>
-                </div>
+                      <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                        {new Date(al.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
 
-                <button
-                  onClick={() => handleExplain(al)}
-                  className="btn btn-secondary text-xs flex items-center gap-1.5 self-start md:self-center"
-                >
-                  <Bot size={14} className="text-blue-400" />
-                  <span>Explain with AI</span>
-                  <ArrowRight size={13} className="text-slate-500" />
-                </button>
-              </div>
-            ))
+                    <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+                      {al.transaction ? (
+                        <>₹{al.transaction.amount.toLocaleString()} — {al.transaction.merchant || al.transaction.category}</>
+                      ) : (
+                        `Risk Signal #${al.id.slice(0, 8)}`
+                      )}
+                    </p>
+
+                    <div className="flex flex-wrap gap-1.5">
+                      {al.detected_reasons?.map((r, idx) => (
+                        <span key={idx} className="badge badge-muted text-[10px] py-0.5">
+                          {r.rule_name || r.reason}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleExplain(al)}
+                    className="btn btn-secondary btn-sm flex items-center gap-1.5 self-start md:self-center flex-shrink-0"
+                  >
+                    <Bot size={13} style={{ color: "var(--ai)" }} />
+                    AI Explanation
+                  </button>
+                </div>
+              );
+            })
           ) : (
-            <div className="glass-card p-12 border border-white/5 text-center text-slate-500 font-mono text-xs">
-              {loading
-                ? "Checking anomaly database..."
-                : "No fraud or anomaly flags registered for this risk level."}
+            <div className="card p-12 text-center">
+              <div className="empty-state">
+                <div className="empty-state-icon" style={{ background: "var(--success-soft)", border: "1px solid rgba(22,156,115,0.2)" }}>
+                  <ShieldCheck style={{ color: "var(--success)" }} />
+                </div>
+                <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
+                  {loading ? "Checking transaction database..." : "No alerts for this risk level"}
+                </p>
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                  {!loading && "Run fraud detection to analyze your latest transactions."}
+                </p>
+              </div>
             </div>
           )}
         </div>
 
-        {/* AI Explanation Drawer / Modal */}
+        {/* AI Explanation Modal */}
         {selectedAlert && (
-          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="glass-card max-w-lg w-full p-6 border border-white/10 space-y-4 animate-scaleUp">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(23,40,37,0.4)", backdropFilter: "blur(4px)" }}>
+            <div className="card max-w-lg w-full p-6 space-y-4 animate-scale-up" style={{ boxShadow: "var(--shadow-lg)" }}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Bot className="text-blue-400" size={20} />
-                  <h3 className="text-base font-semibold text-white">AI Fraud Diagnostic</h3>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--ai-soft)" }}>
+                    <Bot size={16} style={{ color: "var(--ai)" }} />
+                  </div>
+                  <h3 className="font-semibold" style={{ color: "var(--brand-900)", fontSize: "15px" }}>AI Fraud Diagnostic</h3>
                 </div>
                 <button
                   onClick={() => setSelectedAlert(null)}
-                  className="text-slate-400 hover:text-white p-1 rounded-lg"
+                  className="p-1.5 rounded-lg transition-colors hover:bg-gray-100"
+                  style={{ color: "var(--text-muted)" }}
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
-              <div className="p-3 rounded-lg bg-slate-900/80 border border-white/5 text-xs space-y-1">
-                <div className="flex justify-between font-mono text-slate-400">
-                  <span>Alert ID: {selectedAlert.id.slice(0, 8)}</span>
-                  <span className="font-bold text-white">{selectedAlert.risk_level} RISK</span>
+              {/* Alert info */}
+              <div className="p-3 rounded-xl" style={{ background: "var(--background)", border: "1px solid var(--border)" }}>
+                <div className="flex justify-between text-xs mb-1">
+                  <span style={{ color: "var(--text-muted)" }}>Alert #{selectedAlert.id.slice(0, 8)}</span>
+                  <RiskBadge level={selectedAlert.risk_level} />
                 </div>
                 {selectedAlert.transaction && (
-                  <p className="text-slate-200">
-                    Amount: <strong className="text-emerald-400">₹{selectedAlert.transaction.amount.toLocaleString()}</strong> ({selectedAlert.transaction.category})
+                  <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                    Amount: <span style={{ color: "var(--success)", fontWeight: 600 }}>₹{selectedAlert.transaction.amount.toLocaleString()}</span>
+                    {" "}({selectedAlert.transaction.category})
                   </p>
                 )}
               </div>
 
               {explaining ? (
-                <div className="py-8 flex flex-col items-center justify-center gap-3 text-slate-400 text-xs font-mono">
-                  <div className="w-8 h-8 rounded-full border-2 border-blue-500/20 border-t-blue-500 animate-spin" />
-                  Generating contextual explainability report...
+                <div className="py-8 flex flex-col items-center gap-3">
+                  <div className="spinner" />
+                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>Generating AI explanation...</p>
                 </div>
               ) : explanation ? (
-                <div className="space-y-3 text-xs">
-                  <div className="p-3.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-200 space-y-1">
-                    <p className="font-bold text-blue-300">Root Cause Analysis:</p>
-                    <p className="leading-relaxed">{explanation.explanation}</p>
+                <div className="space-y-3 text-sm">
+                  <div className="alert alert-info">
+                    <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: 2 }} />
+                    <div>
+                      <p className="font-semibold mb-1">Root Cause Analysis</p>
+                      <p className="leading-relaxed">{explanation.explanation}</p>
+                    </div>
                   </div>
-                  <div className="p-3.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 space-y-1">
-                    <p className="font-bold text-emerald-300">Remediation Recommendation:</p>
-                    <p className="leading-relaxed">{explanation.recommendation}</p>
+                  <div className="alert alert-success">
+                    <ShieldCheck size={14} style={{ flexShrink: 0, marginTop: 2 }} />
+                    <div>
+                      <p className="font-semibold mb-1">Recommendation</p>
+                      <p className="leading-relaxed">{explanation.recommendation}</p>
+                    </div>
                   </div>
                 </div>
               ) : null}
 
-              <button
-                onClick={() => setSelectedAlert(null)}
-                className="w-full btn btn-primary text-xs py-2 mt-2"
-              >
+              <button onClick={() => setSelectedAlert(null)} className="btn btn-primary w-full">
                 Acknowledge & Close
               </button>
             </div>
