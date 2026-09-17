@@ -1,13 +1,13 @@
 /* Google Fonts — must be first @import per CSS spec */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
 /* ================================================================
-   FINBRIDGE — Global Design System
-   Premium fintech dark theme with glassmorphism and micro-animations
+   FINBRIDGE — Neo-Brutalism Fintech Design System
+   High-contrast containerization, hard offset drop-shadows,
+   tactile interactive elements, and crisp geometric borders.
    ================================================================ */
-
 
 :root {
   /* Brand Palette */
@@ -18,31 +18,31 @@
   --brand-danger: 0 84% 60%;           /* #EF4444 red */
   --brand-gold: 38 92% 50%;            /* #F59E0B gold */
 
-  /* Surface System */
-  --bg-base: 220 18% 6%;               /* #0D1117 near-black */
-  --bg-elevated: 220 16% 10%;          /* #161B22 elevated */
-  --bg-overlay: 220 14% 14%;           /* #1C2230 overlay */
-  --bg-glass: 220 20% 16%;             /* glass base */
+  /* Neo-Brutalist Surfaces */
+  --bg-base: 222 47% 7%;               /* #090D16 pitch navy */
+  --bg-elevated: 220 38% 11%;          /* #111726 solid container */
+  --bg-overlay: 220 38% 15%;           /* #182236 */
+  --bg-glass: 220 38% 11%;
 
-  /* Text */
-  --text-primary: 210 20% 95%;
-  --text-secondary: 215 16% 65%;
-  --text-muted: 215 12% 45%;
+  /* High-Contrast Text */
+  --text-primary: 210 20% 98%;         /* #F8FAFC crisp white */
+  --text-secondary: 215 16% 75%;       /* #94A3B8 */
+  --text-muted: 215 14% 55%;           /* #64748B */
 
-  /* Borders */
-  --border-subtle: 220 14% 18%;
-  --border-emphasis: 220 14% 28%;
+  /* Brutalist Solid Borders */
+  --border-subtle: 220 28% 22%;        /* #222f46 */
+  --border-emphasis: 217 100% 60%;     /* #3b82f6 */
 
   /* Gradients */
-  --gradient-brand: linear-gradient(135deg, hsl(217 100% 60%) 0%, hsl(258 89% 66%) 100%);
-  --gradient-surface: linear-gradient(160deg, hsl(220 18% 9%) 0%, hsl(220 15% 7%) 100%);
-  --gradient-hero: radial-gradient(ellipse 80% 60% at 50% -10%, hsl(217 100% 60% / 0.2) 0%, transparent 60%);
+  --gradient-brand: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  --gradient-surface: linear-gradient(160deg, #111726 0%, #0c101c 100%);
+  --gradient-hero: radial-gradient(ellipse 70% 50% at 50% -5%, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
 
-  /* Shadows */
-  --shadow-glow-blue: 0 0 40px hsl(217 100% 60% / 0.15);
-  --shadow-glow-purple: 0 0 40px hsl(258 89% 66% / 0.15);
-  --shadow-card: 0 4px 24px hsl(220 18% 0% / 0.4);
-  --shadow-elevated: 0 8px 40px hsl(220 18% 0% / 0.6);
+  /* Hard Brutalist Shadows */
+  --shadow-brutal: 4px 4px 0px 0px #000000;
+  --shadow-brutal-hover: 6px 6px 0px 0px #000000;
+  --shadow-brutal-blue: 4px 4px 0px 0px #2563eb;
+  --shadow-brutal-purple: 4px 4px 0px 0px #8b5cf6;
 }
 
 /* ----------------------------------------------------------------
@@ -63,8 +63,8 @@ html {
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: hsl(var(--bg-base));
-  color: hsl(var(--text-primary));
+  background-color: #090d16;
+  color: #f8fafc;
   line-height: 1.6;
   min-height: 100dvh;
 }
@@ -74,9 +74,9 @@ body {
    ---------------------------------------------------------------- */
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
 .mono {
@@ -84,79 +84,61 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ----------------------------------------------------------------
-   Animations
+   Neo-Brutalist Layout & Containerization
    ---------------------------------------------------------------- */
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+.brutal-container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@media (min-width: 640px) {
+  .brutal-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
+.brutal-card,
+.glass-card {
+  background-color: #111726;
+  border: 2px solid #222f46;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px 0px #000000;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px hsl(217 100% 60% / 0.3); }
-  50%       { box-shadow: 0 0 40px hsl(217 100% 60% / 0.6); }
+.brutal-card:hover,
+.glass-card:hover {
+  border-color: #3b82f6;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000000;
 }
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-8px); }
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.animate-fade-in-up { animation: fadeInUp 0.6s ease both; }
-.animate-fade-in    { animation: fadeIn 0.4s ease both; }
-.animate-float      { animation: float 4s ease-in-out infinite; }
-.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-
-/* Stagger delays */
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
-
-/* ----------------------------------------------------------------
-   Glass Components
-   ---------------------------------------------------------------- */
 
 .glass {
-  background: hsl(var(--bg-glass) / 0.6);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  border: 1px solid hsl(var(--border-subtle));
+  background: #0f1422ee;
+  backdrop-filter: blur(12px);
+  border: 2px solid #222f46;
 }
 
-.glass-card {
-  background: hsl(var(--bg-glass) / 0.5);
-  backdrop-filter: blur(20px) saturate(1.2);
-  border: 1px solid hsl(var(--border-subtle));
-  box-shadow: var(--shadow-card);
-  border-radius: 16px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.glass-card:hover {
-  border-color: hsl(var(--border-emphasis));
-  box-shadow: var(--shadow-elevated);
-  transform: translateY(-2px);
+/* Terminal/Window Header Bar */
+.brutal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: #090d16;
+  border-bottom: 2px solid #222f46;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
 }
 
 /* ----------------------------------------------------------------
-   Gradient Text
+   Gradient & Text Effects
    ---------------------------------------------------------------- */
 
 .gradient-text {
@@ -166,24 +148,8 @@ h1, h2, h3, h4, h5, h6 {
   background-clip: text;
 }
 
-.shimmer-text {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--text-secondary)) 0%,
-    hsl(var(--text-primary)) 40%,
-    hsl(217 100% 75%) 50%,
-    hsl(var(--text-primary)) 60%,
-    hsl(var(--text-secondary)) 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s linear infinite;
-}
-
 /* ----------------------------------------------------------------
-   Buttons
+   Neo-Brutalist Buttons
    ---------------------------------------------------------------- */
 
 .btn {
@@ -191,79 +157,116 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
   border-radius: 10px;
-  padding: 0.625rem 1.5rem;
-  transition: all 0.2s ease;
+  padding: 0.65rem 1.4rem;
+  transition: all 0.15s ease;
   cursor: pointer;
-  border: none;
+  border: 2px solid #000000;
   text-decoration: none;
   white-space: nowrap;
+  box-shadow: 3px 3px 0px 0px #000000;
 }
 
-.btn:focus-visible {
-  outline: 2px solid hsl(var(--brand-primary));
-  outline-offset: 2px;
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #000000;
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
 }
 
 .btn-primary {
-  background: var(--gradient-brand);
-  color: white;
-  box-shadow: 0 0 24px hsl(217 100% 60% / 0.35);
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #000000;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 36px hsl(217 100% 60% / 0.55);
+  background: #1d4ed8;
 }
 
-.btn-primary:active {
-  transform: translateY(0);
+.btn-accent {
+  background: #7c3aed;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.btn-accent:hover {
+  background: #6d28d9;
 }
 
 .btn-ghost {
-  background: transparent;
-  color: hsl(var(--text-secondary));
-  border: 1px solid hsl(var(--border-subtle));
+  background: #151d2e;
+  color: #e2e8f0;
+  border-color: #2a3854;
+  box-shadow: 3px 3px 0px 0px #000000;
 }
 
 .btn-ghost:hover {
-  background: hsl(var(--bg-overlay));
-  color: hsl(var(--text-primary));
-  border-color: hsl(var(--border-emphasis));
+  background: #1e2b42;
+  border-color: #3b82f6;
+  color: #ffffff;
 }
 
 .btn-outline {
   background: transparent;
-  color: hsl(var(--brand-primary));
-  border: 1px solid hsl(var(--brand-primary) / 0.4);
+  color: #60a5fa;
+  border: 2px solid #3b82f6;
+  box-shadow: 3px 3px 0px 0px #000000;
 }
 
 .btn-outline:hover {
-  background: hsl(var(--brand-primary) / 0.1);
-  border-color: hsl(var(--brand-primary));
+  background: rgba(37, 99, 235, 0.15);
+  border-color: #60a5fa;
 }
 
 /* ----------------------------------------------------------------
-   Badge
+   Neo-Brutalist Badges
    ---------------------------------------------------------------- */
 
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  letter-spacing: 0.02em;
+  font-size: 0.725rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  border: 1.5px solid currentColor;
+  box-shadow: 2px 2px 0px 0px #000000;
 }
 
-.badge-blue   { background: hsl(217 100% 60% / 0.15); color: hsl(217 100% 75%); border: 1px solid hsl(217 100% 60% / 0.3); }
-.badge-purple { background: hsl(258 89% 66% / 0.15); color: hsl(258 89% 80%);  border: 1px solid hsl(258 89% 66% / 0.3); }
-.badge-green  { background: hsl(158 64% 52% / 0.15); color: hsl(158 64% 65%);  border: 1px solid hsl(158 64% 52% / 0.3); }
-.badge-amber  { background: hsl(43 96% 56% / 0.15);  color: hsl(43 96% 65%);   border: 1px solid hsl(43 96% 56% / 0.3);  }
+.badge-blue {
+  background: rgba(37, 99, 235, 0.18);
+  color: #60a5fa;
+  border-color: #3b82f6;
+}
+
+.badge-purple {
+  background: rgba(139, 92, 246, 0.18);
+  color: #c084fc;
+  border-color: #a855f7;
+}
+
+.badge-green {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border-color: #10b981;
+}
+
+.badge-amber {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border-color: #f59e0b;
+}
 
 /* ----------------------------------------------------------------
    Status Dot
@@ -276,15 +279,47 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-block;
 }
 
-.status-dot-online { background: hsl(var(--brand-success)); box-shadow: 0 0 8px hsl(var(--brand-success) / 0.6); }
-.status-dot-warning { background: hsl(var(--brand-warning)); }
-.status-dot-error   { background: hsl(var(--brand-danger)); }
+.status-dot-online {
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
+}
+
+.status-dot-warning {
+  background: #f59e0b;
+}
+
+.status-dot-error {
+  background: #ef4444;
+}
+
+/* ----------------------------------------------------------------
+   Keyframe Animations
+   ---------------------------------------------------------------- */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.5s ease both; }
+.animate-fade-in    { animation: fadeIn 0.4s ease both; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
 
 /* ----------------------------------------------------------------
    Scrollbar
    ---------------------------------------------------------------- */
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: hsl(var(--bg-base)); }
-::-webkit-scrollbar-thumb { background: hsl(var(--border-emphasis)); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--text-muted)); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #090d16; }
+::-webkit-scrollbar-thumb { background: #222f46; border-radius: 4px; border: 1px solid #000; }
+::-webkit-scrollbar-thumb:hover { background: #3b82f6; }

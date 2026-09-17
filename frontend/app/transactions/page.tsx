@@ -80,8 +80,12 @@ export default function TransactionsPage() {
   );
 
   useEffect(() => {
-    if (!authLoading && firebaseUser) {
-      loadTransactions(page);
+    if (!authLoading) {
+      if (firebaseUser) {
+        loadTransactions(page);
+      } else {
+        setLoadingTxns(false);
+      }
     }
   }, [firebaseUser, authLoading, page, loadTransactions]);
 

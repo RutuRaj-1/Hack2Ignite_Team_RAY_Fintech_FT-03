@@ -52,8 +52,12 @@ export default function FraudAlertsPage() {
   }, [getIdToken, filter]);
 
   useEffect(() => {
-    if (!authLoading && firebaseUser) {
-      fetchData();
+    if (!authLoading) {
+      if (firebaseUser) {
+        fetchData();
+      } else {
+        setLoading(false);
+      }
     }
   }, [firebaseUser, authLoading, fetchData]);
 

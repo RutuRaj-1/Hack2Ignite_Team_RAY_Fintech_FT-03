@@ -1,14 +1,15 @@
 import React from "react";
-import { CheckCircle2, ShieldAlert } from "lucide-react";
+import { CheckCircle2, ShieldAlert, Landmark, ArrowRight } from "lucide-react";
 import { RiskBadge } from "./RiskBadge";
-import type { LoanAssessmentResponse } from "@/lib/api";
+import type { LoanAssessmentResponse, SchemeMatchResponse } from "@/lib/api";
 
 interface LoanRecommendationCardProps {
   assessment: LoanAssessmentResponse;
   className?: string;
+  topScheme?: SchemeMatchResponse;
 }
 
-export function LoanRecommendationCard({ assessment, className = "" }: LoanRecommendationCardProps) {
+export function LoanRecommendationCard({ assessment, className = "", topScheme }: LoanRecommendationCardProps) {
   return (
     <div className={`glass-card p-6 ${className}`}>
       <div className="flex justify-between items-start mb-6">
@@ -64,6 +65,35 @@ export function LoanRecommendationCard({ assessment, className = "" }: LoanRecom
         )}
       </div>
       
+      {topScheme && (
+        <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0">
+              <Landmark className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
+                  {topScheme.match_percentage}% Match
+                </span>
+                <h5 className="text-sm font-bold text-white">{topScheme.scheme.name}</h5>
+              </div>
+              <p className="text-xs text-gray-300 mt-0.5 line-clamp-1">{topScheme.scheme.description}</p>
+            </div>
+          </div>
+          {topScheme.scheme.source_url && (
+            <a
+              href={topScheme.scheme.source_url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 shrink-0"
+            >
+              Details <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+      )}
+
       <div className="mt-6 text-xs text-gray-500 border-t border-white/10 pt-4">
         {assessment.disclaimer}
       </div>

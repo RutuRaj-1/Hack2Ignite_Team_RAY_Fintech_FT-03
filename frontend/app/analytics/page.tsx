@@ -109,7 +109,11 @@ export default function AnalyticsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!firebaseUser || authLoading) return;
+    if (authLoading) return;
+    if (!firebaseUser) {
+      setLoading(false);
+      return;
+    }
     let mounted = true;
 
     const load = async () => {

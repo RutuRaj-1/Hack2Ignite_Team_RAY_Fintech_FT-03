@@ -50,10 +50,17 @@ async def get_current_user(
     user = await service.get_by_firebase_uid(firebase_uid)
 
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found. Please complete registration.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        if firebase_uid.startswith("demo-") or firebase_uid == "demo-msme-user-001":
+            user = await service.create_user(
+                firebase_uid=firebase_uid,
+                name=decoded.get("name", "Demo MSME Owner"),
+                email=decoded.get("email", "demo@finbridge.in"),
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found. Please complete registration.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     return user

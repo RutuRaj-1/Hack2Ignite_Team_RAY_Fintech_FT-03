@@ -68,9 +68,16 @@ export default function LoanSimulatorPage() {
 
   // Load verified business telemetry
   useEffect(() => {
-    if (!authLoading && firebaseUser) {
+    if (!authLoading) {
+      if (!firebaseUser) {
+        setLoading(false);
+        return;
+      }
       getIdToken().then((token) => {
-        if (!token) return;
+        if (!token) {
+          setLoading(false);
+          return;
+        }
         getCreditProfile(token)
           .then((profile) => {
             setCreditProfile(profile);

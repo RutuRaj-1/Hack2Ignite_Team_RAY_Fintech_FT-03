@@ -19,14 +19,21 @@ export default function GovernmentSchemesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authLoading && firebaseUser) {
+    if (!authLoading) {
+      if (!firebaseUser) {
+        setLoading(false);
+        return;
+      }
       const fetchMatches = async () => {
         const token = await getIdToken();
-        if (!token) return;
+        if (!token) {
+          setLoading(false);
+          return;
+        }
         setLoading(true);
         try {
           const res = await getSchemeMatches(token);
-          setMatches(res.matches);
+          setMatches(res.matches || []);
         } catch (error) {
           console.error("Error fetching scheme matches:", error);
         } finally {

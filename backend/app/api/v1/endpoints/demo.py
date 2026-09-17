@@ -55,7 +55,9 @@ async def seed_demo_data(
         await db.refresh(business)
 
     # 2. Clear existing transactions for this business
-    await db.execute(text("DELETE FROM transactions WHERE business_id = :biz_id"), {"biz_id": business.id})
+    from app.models.transaction import Transaction
+    from sqlalchemy import delete
+    await db.execute(delete(Transaction).where(Transaction.business_id == business.id))
     await db.commit()
 
     # 3. Generate 6 months of realistic transactions

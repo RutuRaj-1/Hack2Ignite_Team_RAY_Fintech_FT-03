@@ -178,8 +178,12 @@ export default function CreditProfilePage() {
   }, [getIdToken]);
 
   useEffect(() => {
-    if (!authLoading && firebaseUser) {
-      fetchProfile();
+    if (!authLoading) {
+      if (firebaseUser) {
+        fetchProfile();
+      } else {
+        setLoading(false);
+      }
     }
   }, [firebaseUser, authLoading, fetchProfile]);
 

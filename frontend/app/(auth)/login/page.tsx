@@ -7,9 +7,11 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { loginUser, ApiError } from "@/lib/api";
 import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { loginDemo } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -134,7 +136,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2 transition-all hover:shadow-blue-600/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-2"
+              className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold uppercase tracking-wider rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_#000] flex items-center justify-center gap-2 transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer mt-2"
             >
               {loading ? (
                 <>
@@ -148,9 +150,29 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            <div className="relative my-4 text-center">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-700/80"></div>
+              </div>
+              <span className="relative px-3 bg-[#111726] text-[11px] font-mono uppercase text-gray-400 font-bold">
+                Or Fast Evaluation
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={async () => {
+                await loginDemo();
+                router.push("/dashboard");
+              }}
+              className="w-full py-3 px-4 bg-[#182236] hover:bg-[#1f2b45] text-amber-300 text-xs font-mono font-bold uppercase tracking-wider rounded-xl border-2 border-amber-500/40 shadow-[3px_3px_0px_0px_#000] flex items-center justify-center gap-2 transition-all hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer"
+            >
+              <span>⚡ Enter as Demo MSME Owner</span>
+            </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-gray-800/80 text-center">
+          <div className="mt-6 pt-5 border-t border-gray-800/80 text-center">
             <p className="text-sm text-gray-400">
               Don&apos;t have an account yet?{" "}
               <Link

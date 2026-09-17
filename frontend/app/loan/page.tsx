@@ -112,8 +112,12 @@ export default function LoanPage() {
   }, [getIdToken, requestedAmount, tenureMonths, purpose]);
 
   useEffect(() => {
-    if (!authLoading && firebaseUser) {
-      fetchData();
+    if (!authLoading) {
+      if (firebaseUser) {
+        fetchData();
+      } else {
+        setLoading(false);
+      }
     }
   }, [firebaseUser, authLoading, fetchData]);
 

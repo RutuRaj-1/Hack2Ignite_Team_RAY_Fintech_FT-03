@@ -30,11 +30,12 @@ import {
   Landmark,
   Bot,
   Zap,
-  Loader2
+  Loader2,
+  Building2,
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { firebaseUser, authLoading, getIdToken } = useAuth();
+  const { firebaseUser, authLoading, getIdToken, isDemo } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [demoLoading, setDemoLoading] = useState(false);
@@ -49,7 +50,11 @@ export default function DashboardPage() {
       const idToken = await getIdToken();
       if (!idToken) return;
 
-      const biz = await getBusiness(idToken).catch(() => null);
+      let biz = await getBusiness(idToken).catch(() => null);
+      if (!biz && (isDemo || (typeof window !== "undefined" && localStorage.getItem("finbridge_demo_mode") === "true"))) {
+        await seedDemoData(idToken).catch(() => null);
+        biz = await getBusiness(idToken).catch(() => null);
+      }
       setBusiness(biz);
 
       if (biz) {
