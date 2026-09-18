@@ -30,6 +30,9 @@ async def seed_demo_data(
     biz_service = BusinessService(db)
     txn_service = TransactionService(db)
     
+    from decimal import Decimal
+    from app.services.scheme_matching import SchemeMatchingEngine
+
     # 1. Ensure clean slate (if user already had a business, we'll use it or update it)
     business = await biz_service.get_by_user_id(current_user.id)
     if not business:
@@ -38,18 +41,19 @@ async def seed_demo_data(
             user_id=current_user.id,
             data=BusinessCreate(
                 business_name="Shree Digital Solutions",
-                registration_number="27AADCS1494F1Z1",
-                industry_type="Retail",
-                years_in_operation=4,
-                annual_turnover_range="10L - 50L"
+                business_type="Retail",
+                location="Urban, Maharashtra",
+                business_age=4,
+                annual_turnover=Decimal("3131182.00"),
             )
         )
     else:
-        # Update existing to be Shree Digital Solutions just in case
+        # Update existing to be Shree Digital Solutions
         business.business_name = "Shree Digital Solutions"
-        business.registration_number = "27AADCS1494F1Z1"
-        business.industry_type = "Retail"
-        business.years_in_operation = 4
+        business.business_type = "Retail"
+        business.location = "Urban, Maharashtra"
+        business.business_age = 4
+        business.annual_turnover = Decimal("3131182.00")
         db.add(business)
         await db.commit()
         await db.refresh(business)
@@ -111,10 +115,16 @@ async def seed_demo_data(
         filename="demo_seed.csv"
     )
     
+    # 5. Precompute scheme matches for FT-04
+    scheme_engine = SchemeMatchingEngine(db)
+    matches = await scheme_engine.match_schemes_for_business(business.id)
+
     await db.commit()
     
     return {
         "success": True,
         "message": "Demo data seeded successfully.",
-        "upload_summary": summary
+        "upload_summary": summary,
+        "scheme_matches_count": len(matches)
     }
+
