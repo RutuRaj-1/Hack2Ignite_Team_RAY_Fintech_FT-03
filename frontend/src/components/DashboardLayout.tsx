@@ -23,7 +23,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, signOut, isDemo } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isMobileOpen, setIsMobileOpen] = React.useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [apiOnline, setApiOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -50,11 +50,26 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [location.pathname]);
+
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: "var(--background)" }}>
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "1rem",
+          background: "var(--background)",
+        }}
+      >
         <div className="spinner" />
-        <p className="text-sm text-body" style={{ color: "var(--text-muted)" }}>Loading FinBridge...</p>
+        <p style={{ color: "var(--text-muted)", fontSize: "14px" }}>Loading FinBridge...</p>
       </div>
     );
   }
@@ -81,87 +96,197 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div className="p-5" style={{ borderBottom: "1px solid var(--border)" }}>
-        <Link to="/" className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "var(--brand-700)" }}>
-            <Zap size={17} className="text-white fill-white" />
+      <div style={{ padding: "1.25rem", borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none" }}>
+          <div
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              background: "var(--brand-700)",
+            }}
+          >
+            <Zap size={17} color="white" fill="white" />
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-tight" style={{ color: "var(--brand-900)", letterSpacing: "-0.025em" }}>
+            <div style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.025em", color: "var(--brand-900)", lineHeight: 1.2 }}>
               Fin<span style={{ color: "var(--brand-600)" }}>Bridge</span>
-            </h1>
-            <p className="text-[10px] uppercase tracking-wider" style={{ color: "var(--text-muted)", fontSize: "10px", letterSpacing: "0.06em" }}>MSME Intelligence</p>
+            </div>
+            <div style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)" }}>
+              MSME Intelligence
+            </div>
           </div>
         </Link>
 
         {isDemo && (
-          <div className="mt-3 px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex items-center justify-between"
-            style={{ background: "var(--warning-soft)", border: "1px solid rgba(216,155,34,0.25)", color: "var(--warning-text)" }}>
+          <div
+            className="mt-3"
+            style={{
+              marginTop: "0.75rem",
+              padding: "0.375rem 0.625rem",
+              borderRadius: "8px",
+              fontSize: "10px",
+              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              background: "var(--warning-soft)",
+              border: "1px solid rgba(216,155,34,0.25)",
+              color: "var(--warning-text)",
+            }}
+          >
             <span>⚡ DEMO MODE</span>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--warning)" }} />
+            <span
+              className="animate-pulse"
+              style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--warning)" }}
+            />
           </div>
         )}
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 py-4 px-3 overflow-y-auto space-y-0.5">
+      <div style={{ flex: 1, padding: "1rem 0.75rem", overflowY: "auto" }}>
         {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/dashboard" && pathname.startsWith(item.href));
           const Icon = item.icon;
-
           return (
             <Link
               key={item.href}
               to={item.href}
               onClick={() => setIsMobileOpen(false)}
-              className={`nav-item ${isActive ? "active" : ""}`}
+              className={`nav-item${isActive ? " active" : ""}`}
             >
-              <Icon className={`nav-icon w-4 h-4`} />
+              <Icon className="nav-icon" size={16} />
               <span>{item.name}</span>
-              {isActive && <ChevronRight size={13} className="ml-auto" style={{ color: "var(--brand-600)" }} />}
+              {isActive && (
+                <ChevronRight
+                  size={13}
+                  style={{ marginLeft: "auto", color: "var(--brand-600)" }}
+                />
+              )}
             </Link>
           );
         })}
       </div>
 
-      {/* User Footer */}
-      <div className="p-4" style={{ borderTop: "1px solid var(--border)" }}>
+      {/* Footer */}
+      <div style={{ padding: "1rem", borderTop: "1px solid var(--border)", flexShrink: 0 }}>
         {/* API Status */}
-        <div className="mb-3 px-2.5 py-1.5 rounded-lg text-[10px] flex items-center justify-between"
+        <div
           style={{
-            background: apiOnline === true ? "var(--success-soft)" : apiOnline === false ? "var(--danger-soft)" : "#EFF5F3",
-            border: `1px solid ${apiOnline === true ? "rgba(22,156,115,0.2)" : apiOnline === false ? "rgba(217,101,89,0.2)" : "var(--border)"}`,
-            color: apiOnline === true ? "var(--success-text)" : apiOnline === false ? "var(--danger-text)" : "var(--text-muted)",
-          }}>
-          <div className="flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${apiOnline === true ? "animate-pulse" : ""}`}
-              style={{ background: apiOnline === true ? "var(--success)" : apiOnline === false ? "var(--danger)" : "var(--text-muted)" }} />
-            <span className="font-medium">
-              {apiOnline === true ? "Backend Online" : apiOnline === false ? "Backend Offline" : "Connecting..."}
+            marginBottom: "0.75rem",
+            padding: "0.375rem 0.625rem",
+            borderRadius: "8px",
+            fontSize: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background:
+              apiOnline === true
+                ? "var(--success-soft)"
+                : apiOnline === false
+                ? "var(--danger-soft)"
+                : "#EFF5F3",
+            border: `1px solid ${
+              apiOnline === true
+                ? "rgba(22,156,115,0.2)"
+                : apiOnline === false
+                ? "rgba(217,101,89,0.2)"
+                : "var(--border)"
+            }`,
+            color:
+              apiOnline === true
+                ? "var(--success-text)"
+                : apiOnline === false
+                ? "var(--danger-text)"
+                : "var(--text-muted)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+            <span
+              className={apiOnline === true ? "animate-pulse" : ""}
+              style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                background:
+                  apiOnline === true
+                    ? "var(--success)"
+                    : apiOnline === false
+                    ? "var(--danger)"
+                    : "var(--text-muted)",
+                flexShrink: 0,
+              }}
+            />
+            <span style={{ fontWeight: 500 }}>
+              {apiOnline === true
+                ? "Backend Online"
+                : apiOnline === false
+                ? "Backend Offline"
+                : "Connecting..."}
             </span>
           </div>
           <span style={{ color: "var(--text-muted)" }}>:8000</span>
         </div>
 
         {/* User Info */}
-        <div className="flex items-center gap-3 mb-3 px-1">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs flex-shrink-0"
-            style={{ background: "var(--brand-700)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem", padding: "0 0.25rem" }}>
+          <div
+            style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontWeight: 700,
+              fontSize: "12px",
+              flexShrink: 0,
+              background: "var(--brand-700)",
+            }}
+          >
             {user.name?.charAt(0)?.toUpperCase() || "U"}
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold truncate" style={{ color: "var(--text-primary)" }}>{user.name || "MSME Owner"}</p>
-            <p className="text-[10px] truncate" style={{ color: "var(--text-muted)" }}>{user.email}</p>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "var(--text-primary)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {user.name || "MSME Owner"}
+            </p>
+            <p
+              style={{
+                fontSize: "10px",
+                color: "var(--text-muted)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {user.email}
+            </p>
           </div>
         </div>
 
         <button
           onClick={handleSignOut}
-          className="btn btn-ghost btn-sm w-full"
-          style={{ justifyContent: "flex-start", gap: "0.5rem" }}
+          className="btn btn-ghost btn-sm"
+          style={{ width: "100%", justifyContent: "flex-start", gap: "0.5rem" }}
         >
-          <LogOut className="w-3.5 h-3.5" />
+          <LogOut size={14} />
           Sign Out
         </button>
       </div>
@@ -169,42 +294,53 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen flex" style={{ background: "var(--background)" }}>
-      {/* Desktop Sidebar */}
-      <aside className="sidebar hidden md:flex flex-col">
+    <div className="dashboard-root">
+      {/* Desktop Sidebar — hidden on mobile via CSS */}
+      <aside className="sidebar desktop-sidebar">
         <SidebarContent />
       </aside>
 
-      {/* Mobile Header */}
-      <div className="mobile-header md:hidden">
-        <Link to="/" className="font-bold text-base" style={{ color: "var(--brand-900)", letterSpacing: "-0.02em" }}>
+      {/* Mobile Top Bar — hidden on desktop via CSS */}
+      <div className="mobile-header-bar">
+        <Link
+          to="/"
+          style={{ fontWeight: 700, fontSize: "16px", color: "var(--brand-900)", textDecoration: "none", letterSpacing: "-0.02em" }}
+        >
           Fin<span style={{ color: "var(--brand-700)" }}>Bridge</span>
         </Link>
         <button
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="p-2 rounded-lg transition-colors"
-          style={{ color: "var(--text-secondary)", background: isMobileOpen ? "var(--brand-50)" : "transparent" }}
           aria-label="Toggle navigation"
+          style={{
+            padding: "0.5rem",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            color: "var(--text-secondary)",
+            background: isMobileOpen ? "var(--brand-50)" : "transparent",
+            display: "flex",
+            alignItems: "center",
+          }}
         >
-          {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
-        <div className="md:hidden fixed inset-0 z-40 flex">
-          <div className="sidebar-overlay" onClick={() => setIsMobileOpen(false)} />
-          <aside className="sidebar relative flex flex-col pt-14 w-64 open">
+        <div className="mobile-sidebar-overlay" onClick={() => setIsMobileOpen(false)}>
+          <aside
+            className="sidebar mobile-sidebar open"
+            onClick={(e) => e.stopPropagation()}
+          >
             <SidebarContent />
           </aside>
         </div>
       )}
 
-      {/* Main Content */}
-      <main className="flex-1 md:ml-[260px] pt-14 md:pt-0 min-h-screen flex flex-col">
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full page-enter">
-          {children}
-        </div>
+      {/* Main Content Area */}
+      <main className="dashboard-main">
+        <div className="dashboard-content page-enter">{children}</div>
       </main>
     </div>
   );
